@@ -473,17 +473,7 @@
   function initUi() {
     renderDimSliders();
     const localBtn = document.getElementById("c_submit_local");
-    const syncBtn = document.getElementById("c_submit_sync");
-    const refreshBtn = document.getElementById("c_refresh");
-    const newIdBtn = document.getElementById("c_new_visitor");
     if (localBtn) localBtn.onclick = () => submitFromForm(false);
-    if (syncBtn) syncBtn.onclick = () => submitAndSync();
-    if (refreshBtn) refreshBtn.onclick = () => refresh();
-    if (newIdBtn)
-      newIdBtn.onclick = () => {
-        newVisitorId();
-        setMeta("已切换新访客身份（本机可再提交一次同一角色，用于模拟第 2/3 人）。");
-      };
     refreshGroups();
     renderList();
     refresh();
