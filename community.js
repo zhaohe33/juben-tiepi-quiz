@@ -1,28 +1,23 @@
 /**
  * 角色征集：同一《剧本》+角色名，被 3 个不同访客提交后，
- * 对 12 维取平均并入测试池。
+ * 对 12 维取平均并自动入心测池。
+ * 兼容 index.html 中的 Community.getActiveRoles(roles)
  */
-(function () {
+(function (global) {
   const REPO = "zhaohe33/juben-tiepi-quiz";
   const THRESHOLD = 3;
   const STORAGE_KEY = "juben_community_submissions_v1";
   const VISITOR_KEY = "juben_community_visitor_v1";
   const ISSUE_PREFIX = "[角色提交]";
 
-  const DIM_META = [
-    ["agency", "行动欲"],
-    ["empathy", "共情"],
-    ["ambition", "野心"],
-    ["loyalty", "羁绊"],
-    ["control", "掌控"],
-    ["sacrifice", "牺牲"],
-    ["idealism", "理想"],
-    ["vulnerability", "敏感"],
-    ["autonomy", "自我"],
-    ["moral", "灰度"],
-    ["expression", "输出"],
-    ["romance", "情爱"],
+  const DIM_LABELS = [
+    "行动欲", "共情", "野心", "羁绊", "掌控", "牺牲",
+    "理想", "敏感", "自我", "灰度", "输出", "情爱",
   ];
+
+  let remoteSubmissions = [];
+  let remotePool = [];
+  let groupsCache = [];
 
   function uid() {
     return "v_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -83,8 +78,7 @@
   }
 
   function majorityGender(subs) {
-    let f = 0,
-      m = 0;
+    let f = 0, m = 0;
     subs.forEach((s) => {
       if (s.gender === "female") f++;
       else m++;
@@ -92,14 +86,13 @@
     return f >= m ? "female" : "male";
   }
 
-  function pickText(subs, field) {
+  function pickText(subs, field, fallback) {
     const texts = subs.map((s) => (s[field] || "").trim()).filter(Boolean);
-    if (!texts.length) return "";
+    if (!texts.length) return fallback || "";
     texts.sort((a, b) => b.length - a.length);
     return texts[0];
   }
 
-  /** Merge local + remote submissions; one entry per (key, visitorId) — latest wins */
   function mergeSubmissions(localList, remoteList) {
     const map = new Map();
     [...remoteList, ...localList].forEach((s) => {
@@ -120,8 +113,7 @@
     });
 
     const out = [];
-    groups.forEach((subs, k) => {
-      // unique visitors
+    groups.forEach((subs) => {
       const byVisitor = new Map();
       subs.forEach((s) => {
         const vid = s.visitorId || s.user || uid();
@@ -132,22 +124,24 @@
       const book = unique[0].book.replace(/^《|》$/g, "").trim();
       const name = unique[0].name.trim();
       const ready = unique.length >= THRESHOLD;
+      const take = unique.slice(0, Math.max(THRESHOLD, unique.length));
+      const forAvg = unique.slice(0, THRESHOLD);
       const pooled = ready
         ? {
             book,
             name,
-            gender: majorityGender(unique),
-            v: averageVectors(unique.slice(0, THRESHOLD)),
-            quote: pickText(unique, "quote") || "由玩家征集入池的角色。",
-            why: pickText(unique, "why") || "三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。",
-            risk: pickText(unique, "risk") || "征集角色仅供娱乐，请以店家官方说明为准。",
+            gender: majorityGender(forAvg),
+            v: averageVectors(forAvg),
+            quote: pickText(forAvg, "quote", "由玩家征集入池的角色。"),
+            why: pickText(forAvg, "why", "三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。"),
+            risk: pickText(forAvg, "risk", "征集角色仅供娱乐，请以店家官方说明为准。"),
             community: true,
             votes: unique.length,
           }
         : null;
 
       out.push({
-        key: k,
+        key: roleKey(book, name),
         book,
         name,
         count: unique.length,
@@ -162,48 +156,19 @@
     return out;
   }
 
-  let remoteSubmissions = [];
-  let remotePool = [];
-  let groupsCache = [];
+  function refreshGroups() {
+    groupsCache = buildGroups(mergeSubmissions(loadLocal(), remoteSubmissions));
+    return groupsCache;
+  }
 
   async function fetchCommunityJson() {
     try {
-      const url = "community.json?t=" + Date.now();
-      const res = await fetch(url, { cache: "no-store" });
+      const res = await fetch("community.json?t=" + Date.now(), { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data.submissions)) remoteSubmissions = data.submissions;
       if (Array.isArray(data.pool)) remotePool = data.pool;
-    } catch (e) {
-      /* static offline ok */
-    }
-  }
-
-  async function fetchGithubIssues() {
-    try {
-      const url =
-        "https://api.github.com/repos/" +
-        REPO +
-        "/issues?state=all&per_page=100&labels=character-submit";
-      const res = await fetch(url, {
-        headers: { Accept: "application/vnd.github+json" },
-      });
-      if (!res.ok) {
-        // fallback: no label filter
-        const res2 = await fetch(
-          "https://api.github.com/repos/" + REPO + "/issues?state=all&per_page=100",
-          { headers: { Accept: "application/vnd.github+json" } }
-        );
-        if (!res2.ok) return;
-        const issues = await res2.json();
-        parseIssues(issues);
-        return;
-      }
-      const issues = await res.json();
-      parseIssues(issues);
-    } catch (e) {
-      /* rate limit / network */
-    }
+    } catch (e) {}
   }
 
   function parseIssues(issues) {
@@ -222,37 +187,37 @@
         parsed.push(obj);
       } catch (e) {}
     });
-    if (parsed.length) {
-      remoteSubmissions = mergeSubmissions(remoteSubmissions, parsed);
-    }
+    if (parsed.length) remoteSubmissions = mergeSubmissions(remoteSubmissions, parsed);
   }
 
-  function refreshGroups() {
-    const all = mergeSubmissions(loadLocal(), remoteSubmissions);
-    groupsCache = buildGroups(all);
-    return groupsCache;
+  async function fetchGithubIssues() {
+    try {
+      const res = await fetch(
+        "https://api.github.com/repos/" + REPO + "/issues?state=all&per_page=100",
+        { headers: { Accept: "application/vnd.github+json" } }
+      );
+      if (!res.ok) return;
+      parseIssues(await res.json());
+    } catch (e) {}
   }
 
-  /** Roles approved into the quiz pool (averaged). */
-  window.getCommunityPoolRoles = function getCommunityPoolRoles() {
+  function getCommunityPoolRoles() {
     refreshGroups();
     const fromGroups = groupsCache.filter((g) => g.inPool && g.pooled).map((g) => g.pooled);
-    // also include community.json pool entries not yet in groups
     const keys = new Set(fromGroups.map((r) => roleKey(r.book, r.name)));
     remotePool.forEach((r) => {
-      if (!r || !r.book || !r.name) return;
+      if (!r || !r.book || !r.name || !Array.isArray(r.v)) return;
       const k = roleKey(r.book, r.name);
-      if (!keys.has(k)) {
-        fromGroups.push({ ...r, community: true });
-        keys.add(k);
-      }
+      if (keys.has(k)) return;
+      fromGroups.push({ ...r, community: true });
+      keys.add(k);
     });
     return fromGroups;
-  };
+  }
 
-  window.getActiveRoles = function getActiveRoles() {
-    const base = typeof roles !== "undefined" ? roles : [];
-    const extra = window.getCommunityPoolRoles();
+  function getActiveRoles(baseRoles) {
+    const base = Array.isArray(baseRoles) ? baseRoles : typeof roles !== "undefined" ? roles : [];
+    const extra = getCommunityPoolRoles();
     const seen = new Set(base.map((r) => roleKey(r.book, r.name)));
     const merged = base.slice();
     extra.forEach((r) => {
@@ -266,7 +231,7 @@
       }
     });
     return merged;
-  };
+  }
 
   function issueBody(payload) {
     return (
@@ -274,122 +239,113 @@
       JSON.stringify(payload) +
       "\n-->\n\n" +
       "### 角色征集\n" +
-      "- 剧本：《" +
-      payload.book +
-      "》\n" +
-      "- 角色：" +
-      payload.name +
-      "\n" +
-      "- 性别：" +
-      (payload.gender === "female" ? "女" : "男") +
-      "\n" +
-      "- 12维：" +
-      payload.v.join(", ") +
-      "\n\n" +
-      "同一角色被 **3 位不同用户** 提交后，系统会取 12 维平均分自动入池。\n" +
-      "\n请不要修改 `<!--JUBEN_CHAR ... -->` 代码块。\n"
+      "- 剧本：《" + payload.book + "》\n" +
+      "- 角色：" + payload.name + "\n" +
+      "- 性别：" + (payload.gender === "female" ? "女" : "男") + "\n" +
+      "- 12维：" + payload.v.join(", ") + "\n\n" +
+      "同一角色被 **3 位不同用户** 提交后，系统取 12 维平均分自动入池。\n" +
+      "请勿修改 `<!--JUBEN_CHAR ... -->` 代码块。\n"
     );
   }
 
   function openGithubIssue(payload) {
     const title = ISSUE_PREFIX + " 《" + payload.book + "》" + payload.name;
     const url =
-      "https://github.com/" +
-      REPO +
-      "/issues/new?title=" +
+      "https://github.com/" + REPO + "/issues/new?title=" +
       encodeURIComponent(title) +
-      "&body=" +
-      encodeURIComponent(issueBody(payload)) +
-      "&labels=" +
-      encodeURIComponent("character-submit");
+      "&body=" + encodeURIComponent(issueBody(payload)) +
+      "&labels=" + encodeURIComponent("character-submit");
     window.open(url, "_blank", "noopener");
   }
 
-  function renderDimSliders(root) {
-    root.innerHTML = DIM_META.map(([key, label], i) => {
+  function renderDimSliders() {
+    const root = document.getElementById("c_dims");
+    if (!root) return;
+    root.innerHTML = DIM_LABELS.map((label, i) => {
       return (
-        '<label class="dim-slider">' +
-        "<span>" +
-        label +
-        '</span><input type="range" min="1" max="10" value="5" data-dim="' +
-        i +
-        '" /><b data-val="' +
-        i +
-        '">5</b></label>'
+        '<label class="c-dim"><span>' + label +
+        '</span><input type="range" min="1" max="10" value="5" data-i="' + i +
+        '" /><b id="c_dim_val_' + i + '">5</b></label>'
       );
     }).join("");
-    root.querySelectorAll('input[type="range"]').forEach((inp) => {
+    root.querySelectorAll("input[type=range]").forEach((inp) => {
       inp.addEventListener("input", () => {
-        root.querySelector('[data-val="' + inp.dataset.dim + '"]').textContent = inp.value;
+        const el = document.getElementById("c_dim_val_" + inp.dataset.i);
+        if (el) el.textContent = inp.value;
       });
     });
   }
 
   function readForm() {
-    const book = document.getElementById("cBook").value.trim().replace(/^《|》$/g, "");
-    const name = document.getElementById("cName").value.trim();
-    const gender = document.getElementById("cGender").value;
-    const quote = document.getElementById("cQuote").value.trim();
-    const why = document.getElementById("cWhy").value.trim();
-    const risk = document.getElementById("cRisk").value.trim();
-    const v = [...document.querySelectorAll("#cDims input[type=range]")].map((el) =>
+    const book = (document.getElementById("c_book").value || "").trim().replace(/^《|》$/g, "");
+    const name = (document.getElementById("c_name").value || "").trim();
+    const gender = document.getElementById("c_gender").value || "female";
+    const quote = (document.getElementById("c_quote").value || "").trim();
+    const why = (document.getElementById("c_why").value || "").trim();
+    const risk = (document.getElementById("c_risk").value || "").trim();
+    const v = [...document.querySelectorAll("#c_dims input[type=range]")].map((el) =>
       clampInt(el.value)
     );
     return { book, name, gender, v, quote, why, risk };
   }
 
+  function setError(msg) {
+    const el = document.getElementById("c_error");
+    if (!el) return;
+    if (!msg) {
+      el.classList.add("hidden");
+      el.textContent = "";
+      return;
+    }
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+
+  function setMeta(msg) {
+    const el = document.getElementById("c_meta");
+    if (el) el.textContent = msg;
+  }
+
   function renderList() {
-    const box = document.getElementById("cList");
+    const box = document.getElementById("c_list");
     if (!box) return;
     const groups = refreshGroups();
     if (!groups.length) {
       box.innerHTML =
-        '<p class="small" style="margin:0">还没有征集。提交同一角色满 3 人后，会按 12 维平均分入池。</p>';
+        '<div class="c-empty">还没有征集。同一角色被 3 人提交后，会按 12 维平均分入池。</div>';
       return;
     }
     box.innerHTML = groups
       .map((g) => {
-        const pct = Math.min(100, Math.round((g.count / g.need) * 100));
         const status = g.inPool
-          ? '<span class="c-badge on">已入池 · 取平均</span>'
-          : '<span class="c-badge">征集中 ' + g.count + "/" + g.need + "</span>";
-        const dims = g.inPool && g.pooled
-          ? '<div class="c-avg">入池向量：[' + g.pooled.v.join(", ") + "]</div>"
-          : "";
+          ? '<span class="c-tag">已入池 · 平均向量</span>'
+          : '<span class="c-sub">征集中 ' + g.count + "/" + g.need + "</span>";
+        const avg =
+          g.inPool && g.pooled
+            ? '<div class="c-brief">入池向量：[' + g.pooled.v.join(", ") + "]</div>"
+            : '<div class="c-brief">还差 ' + Math.max(0, g.need - g.count) + " 人提交</div>";
         return (
-          '<div class="c-item">' +
-          "<div class=\"c-item-top\"><b>《" +
-          g.book +
-          "》" +
-          g.name +
-          "</b>" +
-          status +
+          '<div class="c-card' + (g.inPool ? " inpool" : "") + '">' +
+          '<div class="c-card-top"><div>' +
+          '<div class="c-tag">《' + g.book + "》</div>" +
+          "<h3>" + g.name + "</h3>" + status +
           "</div>" +
-          '<div class="c-bar"><i style="width:' +
-          pct +
-          '%"></i></div>' +
-          dims +
-          "</div>"
+          '<div class="c-votes">' + g.count + "</div>" +
+          "</div>" + avg + "</div>"
         );
       })
       .join("");
   }
 
-  function setStatus(msg, ok) {
-    const el = document.getElementById("cStatus");
-    if (!el) return;
-    el.textContent = msg || "";
-    el.style.color = ok ? "#c7a56b" : "#c9bdb4";
-  }
-
-  function submitCharacter(publishRemote) {
+  function submitFromForm(publishRemote) {
+    setError("");
     const data = readForm();
     if (!data.book || !data.name) {
-      setStatus("请填写剧本名和角色名。", false);
+      setError("请填写剧本名和角色名。");
       return;
     }
     if (data.v.length !== 12) {
-      setStatus("12 维分数不完整。", false);
+      setError("请完整拖动 12 维分数。");
       return;
     }
 
@@ -406,7 +362,11 @@
     };
 
     const list = loadLocal().filter(
-      (s) => !(roleKey(s.book, s.name) === roleKey(payload.book, payload.name) && s.visitorId === payload.visitorId)
+      (s) =>
+        !(
+          roleKey(s.book, s.name) === roleKey(payload.book, payload.name) &&
+          s.visitorId === payload.visitorId
+        )
     );
     list.push(payload);
     saveLocal(list);
@@ -415,86 +375,122 @@
 
     const g = groupsCache.find((x) => x.key === roleKey(payload.book, payload.name));
     if (g && g.inPool) {
-      setStatus(
-        "《" + payload.book + "》" + payload.name + " 已凑满 " + THRESHOLD + " 人，已按平均分入测试池！",
-        true
-      );
+      setMeta("《" + payload.book + "》" + payload.name + " 已满 " + THRESHOLD + " 人，已按平均分入测试池。");
     } else {
-      setStatus(
-        "已记录。当前 《" +
-          payload.book +
-          "》" +
-          payload.name +
-          " 为 " +
-          (g ? g.count : 1) +
-          "/" +
-          THRESHOLD +
-          " 人。" +
-          (publishRemote ? " 正在打开 GitHub 以便同步到全网…" : ""),
-        true
+      setMeta(
+        "已记录 《" + payload.book + "》" + payload.name + "：" +
+          (g ? g.count : 1) + "/" + THRESHOLD + " 人。"
       );
     }
 
-    if (publishRemote) openGithubIssue(payload);
+    if (publishRemote !== false) {
+      // default: also open GitHub for multi-user sync when clicking main submit
+    }
   }
 
-  window.showCommunity = function showCommunity() {
-    ["hero", "setup", "quiz", "checkpoint", "result"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add("hidden");
-    });
-    document.getElementById("community").classList.remove("hidden");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    renderList();
-    window.refreshCommunity && window.refreshCommunity();
-  };
+  function submitAndSync() {
+    submitFromForm(false);
+    const data = readForm();
+    if (!data.book || !data.name || data.v.length !== 12) return;
+    const payload = {
+      book: data.book,
+      name: data.name,
+      gender: data.gender,
+      v: data.v,
+      quote: data.quote,
+      why: data.why,
+      risk: data.risk,
+      visitorId: getVisitorId(),
+      at: new Date().toISOString(),
+    };
+    openGithubIssue(payload);
+    setMeta("已打开 GitHub。登录并 Create issue 后，全网即可合并计数。");
+  }
 
-  window.hideCommunityToSetup = function hideCommunityToSetup() {
-    document.getElementById("community").classList.add("hidden");
-    document.getElementById("setup").classList.remove("hidden");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  window.refreshCommunity = async function refreshCommunity() {
-    setStatus("同步征集板…", true);
+  async function refresh() {
+    setMeta("同步中…");
     await fetchCommunityJson();
     await fetchGithubIssues();
     refreshGroups();
     renderList();
-    const pooled = window.getCommunityPoolRoles().length;
-    setStatus("已同步。入池征集角色 " + pooled + " 个。", true);
-  };
-
-  function init() {
-    const dims = document.getElementById("cDims");
-    if (dims) renderDimSliders(dims);
-
-    const btnLocal = document.getElementById("cSubmitLocal");
-    const btnRemote = document.getElementById("cSubmitRemote");
-    const btnRefresh = document.getElementById("cRefresh");
-    const btnNewId = document.getElementById("cNewVisitor");
-
-    if (btnLocal) btnLocal.onclick = () => submitCharacter(false);
-    if (btnRemote) btnRemote.onclick = () => submitCharacter(true);
-    if (btnRefresh) btnRefresh.onclick = () => window.refreshCommunity();
-    if (btnNewId)
-      btnNewId.onclick = () => {
-        newVisitorId();
-        setStatus("已切换为新访客身份（用于本机模拟多人提交）。", true);
-      };
-
-    refreshGroups();
-    renderList();
-    fetchCommunityJson().then(() => {
-      refreshGroups();
-      renderList();
-    });
-    fetchGithubIssues().then(() => {
-      refreshGroups();
-      renderList();
-    });
+    setMeta(
+      "已同步 · 征集 " + groupsCache.length + " 组 · 入池 " +
+        getCommunityPoolRoles().length + " 个"
+    );
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
-})();
+  function showCommunity() {
+    ["hero", "setup", "quiz", "checkpoint", "result"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("hidden");
+    });
+    const cm = document.getElementById("community");
+    if (cm) cm.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    renderList();
+    refresh();
+  }
+
+  function hideCommunityToSetup() {
+    const cm = document.getElementById("community");
+    if (cm) cm.classList.add("hidden");
+    const setup = document.getElementById("setup");
+    if (setup) setup.classList.remove("hidden");
+    else {
+      const hero = document.getElementById("hero");
+      if (hero) hero.classList.remove("hidden");
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function hideCommunityToHero() {
+    const cm = document.getElementById("community");
+    if (cm) cm.classList.add("hidden");
+    const hero = document.getElementById("hero");
+    if (hero) hero.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function initUi() {
+    renderDimSliders();
+    const localBtn = document.getElementById("c_submit_local");
+    const syncBtn = document.getElementById("c_submit_sync");
+    const refreshBtn = document.getElementById("c_refresh");
+    const newIdBtn = document.getElementById("c_new_visitor");
+    if (localBtn) localBtn.onclick = () => submitFromForm(false);
+    if (syncBtn) syncBtn.onclick = () => submitAndSync();
+    if (refreshBtn) refreshBtn.onclick = () => refresh();
+    if (newIdBtn)
+      newIdBtn.onclick = () => {
+        newVisitorId();
+        setMeta("已切换新访客身份（本机可再提交一次同一角色，用于模拟第 2/3 人）。");
+      };
+    refreshGroups();
+    renderList();
+    refresh();
+  }
+
+  const Community = {
+    THRESHOLD,
+    getActiveRoles,
+    getCommunityPoolRoles,
+    submitFromForm: () => submitFromForm(false),
+    submitAndSync,
+    refresh,
+    showCommunity,
+    hideCommunityToSetup,
+    hideCommunityToHero,
+    newVisitorId,
+    initUi,
+  };
+
+  global.Community = Community;
+  global.showCommunity = showCommunity;
+  global.getActiveRoles = function () { return getActiveRoles(typeof roles !== "undefined" ? roles : []); };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initUi);
+  } else {
+    initUi();
+  }
+})(window);
