@@ -4,11 +4,9 @@
  * 兼容 index.html 中的 Community.getActiveRoles(roles)
  */
 (function (global) {
-  const REPO = "zhaohe33/juben-tiepi-quiz";
   const THRESHOLD = 3;
   const STORAGE_KEY = "juben_community_submissions_v1";
   const VISITOR_KEY = "juben_community_visitor_v1";
-  const ISSUE_PREFIX = "[角色提交]";
   // 公开云端库：无需登录，所有人提交后彼此可见
   const CLOUD_URL = "https://mantledb.sh/v2/juben-tiepi-public-v1/community";
 
@@ -244,33 +242,11 @@
   }
 
   function parseIssues(issues) {
-    if (!Array.isArray(issues)) return;
-    const parsed = [];
-    issues.forEach((issue) => {
-      if (!issue.title || issue.title.indexOf(ISSUE_PREFIX) !== 0) return;
-      if (issue.pull_request) return;
-      const m = /<!--JUBEN_CHAR\s*([\s\S]*?)-->/.exec(issue.body || "");
-      if (!m) return;
-      try {
-        const obj = JSON.parse(m[1].trim());
-        obj.user = (issue.user && issue.user.login) || "github";
-        obj.visitorId = "gh:" + obj.user;
-        obj.at = issue.created_at || obj.at || "";
-        parsed.push(obj);
-      } catch (e) {}
-    });
-    if (parsed.length) remoteSubmissions = mergeSubmissions(remoteSubmissions, parsed);
+    // legacy no-op (GitHub Issues sync removed)
   }
 
   async function fetchGithubIssues() {
-    try {
-      const res = await fetch(
-        "https://api.github.com/repos/" + REPO + "/issues?state=all&per_page=100",
-        { headers: { Accept: "application/vnd.github+json" } }
-      );
-      if (!res.ok) return;
-      parseIssues(await res.json());
-    } catch (e) {}
+    // legacy no-op
   }
 
   function getCommunityPoolRoles() {
@@ -303,31 +279,6 @@
       }
     });
     return merged;
-  }
-
-  function issueBody(payload) {
-    return (
-      "<!--JUBEN_CHAR\n" +
-      JSON.stringify(payload) +
-      "\n-->\n\n" +
-      "### 角色征集\n" +
-      "- 剧本：《" + payload.book + "》\n" +
-      "- 角色：" + payload.name + "\n" +
-      "- 性别：" + (payload.gender === "female" ? "女" : "男") + "\n" +
-      "- 12维：" + payload.v.join(", ") + "\n\n" +
-      "同一角色被 **3 位不同用户** 提交后，系统取 12 维平均分自动入池。\n" +
-      "请勿修改 `<!--JUBEN_CHAR ... -->` 代码块。\n"
-    );
-  }
-
-  function openGithubIssue(payload) {
-    const title = ISSUE_PREFIX + " 《" + payload.book + "》" + payload.name;
-    const url =
-      "https://github.com/" + REPO + "/issues/new?title=" +
-      encodeURIComponent(title) +
-      "&body=" + encodeURIComponent(issueBody(payload)) +
-      "&labels=" + encodeURIComponent("character-submit");
-    window.open(url, "_blank", "noopener");
   }
 
   function renderDimSliders() {
