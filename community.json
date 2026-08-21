@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "submissions": [],
+  "pool": [],
+  "note": "可选：把满 3 票的角色写入 pool；页面也会从 GitHub Issues 与本机提交自动统计入池。"
+}

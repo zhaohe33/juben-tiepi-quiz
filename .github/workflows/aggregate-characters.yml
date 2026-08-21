@@ -1,0 +1,124 @@
+name: Aggregate character submissions
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Aggregate submissions into community.json
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const THRESHOLD = 3;
+            const PREFIX = '[角色提交]';
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              per_page: 100,
+            });
+
+            function norm(s) {
+              return String(s || '').trim().replace(/^《|》$/g, '').replace(/\s+/g, '').toLowerCase();
+            }
+            function roleKey(book, name) {
+              return norm(book) + '|' + norm(name);
+            }
+            function clampInt(n) {
+              n = Math.round(Number(n));
+              if (!Number.isFinite(n)) n = 5;
+              return Math.max(1, Math.min(10, n));
+            }
+
+            const submissions = [];
+            for (const issue of issues) {
+              if (issue.pull_request) continue;
+              if (!issue.title || !issue.title.startsWith(PREFIX)) continue;
+              const m = /<!--JUBEN_CHAR\s*([\s\S]*?)-->/.exec(issue.body || '');
+              if (!m) continue;
+              try {
+                const obj = JSON.parse(m[1].trim());
+                if (!obj.book || !obj.name || !Array.isArray(obj.v) || obj.v.length !== 12) continue;
+                obj.user = issue.user.login;
+                obj.visitorId = 'gh:' + issue.user.login;
+                obj.at = issue.created_at;
+                obj.v = obj.v.map(clampInt);
+                submissions.push(obj);
+              } catch (e) {}
+            }
+
+            // latest per (role, user)
+            const uniq = new Map();
+            for (const s of submissions) {
+              const k = roleKey(s.book, s.name) + '::' + s.visitorId;
+              const prev = uniq.get(k);
+              if (!prev || s.at > prev.at) uniq.set(k, s);
+            }
+            const list = [...uniq.values()];
+
+            const groups = new Map();
+            for (const s of list) {
+              const k = roleKey(s.book, s.name);
+              if (!groups.has(k)) groups.set(k, []);
+              groups.get(k).push(s);
+            }
+
+            const pool = [];
+            for (const [, subs] of groups) {
+              if (subs.length < THRESHOLD) continue;
+              const take = subs.slice(0, THRESHOLD);
+              const v = [];
+              for (let i = 0; i < 12; i++) {
+                v.push(clampInt(take.reduce((a, s) => a + s.v[i], 0) / take.length));
+              }
+              let f = 0, m = 0;
+              take.forEach(s => (s.gender === 'female' ? f++ : m++));
+              const pick = (field) => {
+                const texts = take.map(s => (s[field] || '').trim()).filter(Boolean).sort((a,b)=>b.length-a.length);
+                return texts[0] || '';
+              };
+              pool.push({
+                book: take[0].book.replace(/^《|》$/g, '').trim(),
+                name: take[0].name.trim(),
+                gender: f >= m ? 'female' : 'male',
+                v,
+                quote: pick('quote') || '由玩家征集入池的角色。',
+                why: pick('why') || '三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。',
+                risk: pick('risk') || '征集角色仅供娱乐，请以店家官方说明为准。',
+                from: take.length,
+                community: true,
+              });
+            }
+
+            const out = {
+              version: 1,
+              updatedAt: new Date().toISOString(),
+              submissions: list,
+              pool,
+            };
+            fs.writeFileSync('community.json', JSON.stringify(out, null, 2) + '\n');
+            console.log('submissions', list.length, 'pool', pool.length);
+
+      - name: Commit community.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add community.json
+          if git diff --staged --quiet; then
+            echo "No changes"
+          else
+            git commit -m "chore: aggregate community character submissions"
+            git push
+          fi
