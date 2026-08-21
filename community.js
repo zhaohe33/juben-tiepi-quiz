@@ -457,11 +457,15 @@
     const payload = submitFromForm(true);
     if (!payload) return;
     setMeta("正在同步到全网…");
+    setError("");
     const ok = await publishToCloud(payload);
-    await refresh();
+    refreshGroups();
+    renderList();
+    if (typeof global.renderHomeRoster === "function") global.renderHomeRoster();
     const g = groupsCache.find((x) => x.key === roleKey(payload.book, payload.name));
     if (!ok) {
       setError("全网同步失败，已先保存在本机。请稍后重试提交。");
+      setMeta("本机已保存，云端同步失败。");
       return;
     }
     if (g && g.inPool) {
@@ -479,7 +483,6 @@
     setMeta("同步中…");
     await fetchCloud();
     await fetchCommunityJson();
-    await fetchGithubIssues();
     refreshGroups();
     renderList();
     setMeta(
