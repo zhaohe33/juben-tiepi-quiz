@@ -299,9 +299,10 @@
     const book = (document.getElementById("c_book").value || "").trim().replace(/^《|》$/g, "");
     const name = (document.getElementById("c_name").value || "").trim();
     const gender = document.getElementById("c_gender").value || "female";
-    const quote = (document.getElementById("c_quote").value || "").trim();
-    const why = (document.getElementById("c_why").value || "").trim();
-    const risk = (document.getElementById("c_risk").value || "").trim();
+    const quoteEl = document.getElementById("c_quote");
+    const quote = ((quoteEl && quoteEl.value) || "").trim();
+    const why = "";
+    const risk = "";
     const v = [...document.querySelectorAll("#c_dims input[type=range]")].map((el) =>
       clampInt(el.value)
     );
