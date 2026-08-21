@@ -437,6 +437,7 @@
       "已同步 · 征集 " + groupsCache.length + " 组 · 入池 " +
         getCommunityPoolRoles().length + " 个"
     );
+    if (typeof global.renderHomeRoster === "function") global.renderHomeRoster();
   }
 
   function showCommunity() {
