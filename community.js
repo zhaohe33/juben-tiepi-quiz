@@ -481,10 +481,16 @@
     refresh();
   }
 
+  function getGroups() {
+    refreshGroups();
+    return groupsCache.slice();
+  }
+
   const Community = {
     THRESHOLD,
     getActiveRoles,
     getCommunityPoolRoles,
+    getGroups,
     submitFromForm: () => submitFromForm(false),
     submitAndSync,
     refresh,
