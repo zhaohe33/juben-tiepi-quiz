@@ -9,6 +9,8 @@
   const STORAGE_KEY = "juben_community_submissions_v1";
   const VISITOR_KEY = "juben_community_visitor_v1";
   const ISSUE_PREFIX = "[角色提交]";
+  // 公开云端库：无需登录，所有人提交后彼此可见
+  const CLOUD_URL = "https://mantledb.sh/v2/juben-tiepi-public-v1/community";
 
   const DIM_LABELS = [
     "行动欲", "共情", "野心", "羁绊", "掌控", "牺牲",
@@ -180,9 +182,65 @@
       const res = await fetch("community.json?t=" + Date.now(), { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
-      if (Array.isArray(data.submissions)) remoteSubmissions = data.submissions;
+      if (Array.isArray(data.submissions)) {
+        remoteSubmissions = mergeSubmissions(remoteSubmissions, data.submissions);
+      }
       if (Array.isArray(data.pool)) remotePool = data.pool;
     } catch (e) {}
+  }
+
+  async function fetchCloud() {
+    try {
+      const res = await fetch(CLOUD_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data && Array.isArray(data.submissions)) {
+        remoteSubmissions = mergeSubmissions(remoteSubmissions, data.submissions);
+      }
+      return data && typeof data === "object" ? data : { submissions: [], version: 1 };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function putCloud(data) {
+    try {
+      const res = await fetch(CLOUD_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return res.ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function publishToCloud(payload) {
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const cur = (await fetchCloud()) || { submissions: [], version: 1 };
+      const subs = Array.isArray(cur.submissions) ? cur.submissions.slice() : [];
+      const nextSubs = subs.filter(
+        (s) =>
+          !(
+            roleKey(s.book, s.name) === roleKey(payload.book, payload.name) &&
+            (s.visitorId || s.user) === payload.visitorId
+          )
+      );
+      nextSubs.push(payload);
+      nextSubs.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+      const next = {
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        submissions: nextSubs.slice(0, 80),
+      };
+      if (await putCloud(next)) {
+        remoteSubmissions = next.submissions;
+        return true;
+      }
+      await new Promise((r) => setTimeout(r, 200 + attempt * 150));
+    }
+    return false;
   }
 
   function parseIssues(issues) {
@@ -362,11 +420,11 @@
     const data = readForm();
     if (!data.book || !data.name) {
       setError("请填写剧本名和角色名。");
-      return;
+      return null;
     }
     if (data.v.length !== 12) {
       setError("请完整拖动 12 维分数。");
-      return;
+      return null;
     }
 
     const payload = {
@@ -392,35 +450,34 @@
     saveLocal(list);
     refreshGroups();
     renderList();
-
-    const g = groupsCache.find((x) => x.key === roleKey(payload.book, payload.name));
-    if (g && g.inPool) {
-      setMeta("《" + payload.book + "》" + payload.name + " 已满 " + THRESHOLD + " 人，已按平均分入测试池。");
-    } else {
-      setMeta(
-        "已记录 《" + payload.book + "》" + payload.name + "：" +
-          (g ? g.count : 1) + "/" + THRESHOLD + " 人。"
-      );
-    }
-
-    if (publishRemote) {
-      openGithubIssue(payload);
-      setMeta(
-        (g && g.inPool
-          ? "《" + payload.book + "》" + payload.name + " 已入池。"
-          : "已记录 《" + payload.book + "》" + payload.name + "：" + (g ? g.count : 1) + "/" + THRESHOLD + "。") +
-          " 已打开 GitHub：登录后点 Create issue，其他人刷新即可看见。"
-      );
-    }
     return payload;
   }
 
-  function submitAndSync() {
-    submitFromForm(true);
+  async function submitAndSync() {
+    const payload = submitFromForm(true);
+    if (!payload) return;
+    setMeta("正在同步到全网…");
+    const ok = await publishToCloud(payload);
+    await refresh();
+    const g = groupsCache.find((x) => x.key === roleKey(payload.book, payload.name));
+    if (!ok) {
+      setError("全网同步失败，已先保存在本机。请稍后重试提交。");
+      return;
+    }
+    if (g && g.inPool) {
+      setMeta("《" + payload.book + "》" + payload.name + " 已满 " + THRESHOLD + " 人，已按平均分入测试池。所有人刷新可见。");
+    } else {
+      setMeta(
+        "已同步 《" + payload.book + "》" + payload.name + "：" +
+          (g ? g.count : 1) + "/" + THRESHOLD +
+          "。其他人刷新页面即可看见。"
+      );
+    }
   }
 
   async function refresh() {
     setMeta("同步中…");
+    await fetchCloud();
     await fetchCommunityJson();
     await fetchGithubIssues();
     refreshGroups();
