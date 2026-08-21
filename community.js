@@ -403,28 +403,20 @@
       );
     }
 
-    if (publishRemote !== false) {
-      // default: also open GitHub for multi-user sync when clicking main submit
+    if (publishRemote) {
+      openGithubIssue(payload);
+      setMeta(
+        (g && g.inPool
+          ? "《" + payload.book + "》" + payload.name + " 已入池。"
+          : "已记录 《" + payload.book + "》" + payload.name + "：" + (g ? g.count : 1) + "/" + THRESHOLD + "。") +
+          " 已打开 GitHub：登录后点 Create issue，其他人刷新即可看见。"
+      );
     }
+    return payload;
   }
 
   function submitAndSync() {
-    submitFromForm(false);
-    const data = readForm();
-    if (!data.book || !data.name || data.v.length !== 12) return;
-    const payload = {
-      book: data.book,
-      name: data.name,
-      gender: data.gender,
-      v: data.v,
-      quote: data.quote,
-      why: data.why,
-      risk: data.risk,
-      visitorId: getVisitorId(),
-      at: new Date().toISOString(),
-    };
-    openGithubIssue(payload);
-    setMeta("已打开 GitHub。登录并 Create issue 后，全网即可合并计数。");
+    submitFromForm(true);
   }
 
   async function refresh() {
@@ -475,7 +467,7 @@
   function initUi() {
     renderDimSliders();
     const localBtn = document.getElementById("c_submit_local");
-    if (localBtn) localBtn.onclick = () => submitFromForm(false);
+    if (localBtn) localBtn.onclick = () => submitAndSync();
     refreshGroups();
     renderList();
     refresh();
