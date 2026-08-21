@@ -14,6 +14,20 @@
     "行动欲", "共情", "野心", "羁绊", "掌控", "牺牲",
     "理想", "敏感", "自我", "灰度", "输出", "情爱",
   ];
+  const DIM_HINTS = [
+    "推进局势、找第三条路、不愿干等",
+    "体谅他人、先问对方怎么想",
+    "要结果、要位置、想把事做成",
+    "护自己人、偏爱、关键时刻站队",
+    "冷静布局、掌握信息与节奏",
+    "肯付出、肯背锅、肯替人扛",
+    "原则、苍生、有些线绝不退",
+    "缺安全感、内耗、怕被放下",
+    "不被替决定、要自由与尊严",
+    "能接受不漂亮的手段与代价",
+    "敢说敢演、互动感、舞台欲",
+    "恋爱浓度、偏爱、占有与被选",
+  ];
 
   let remoteSubmissions = [];
   let remotePool = [];
@@ -263,9 +277,14 @@
     if (!root) return;
     root.innerHTML = DIM_LABELS.map((label, i) => {
       return (
-        '<label class="c-dim"><span>' + label +
-        '</span><input type="range" min="1" max="10" value="5" data-i="' + i +
-        '" /><b id="c_dim_val_' + i + '">5</b></label>'
+        '<div class="c-dim">' +
+          '<div class="c-dim-name">' +
+            '<span>' + label + '</span>' +
+            '<small>' + DIM_HINTS[i] + '</small>' +
+          '</div>' +
+          '<input type="range" min="1" max="10" value="5" data-i="' + i + '" />' +
+          '<b id="c_dim_val_' + i + '">5</b>' +
+        '</div>'
       );
     }).join("");
     root.querySelectorAll("input[type=range]").forEach((inp) => {
