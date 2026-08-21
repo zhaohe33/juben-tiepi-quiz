@@ -5,10 +5,11 @@
  */
 (function (global) {
   const THRESHOLD = 3;
-  const STORAGE_KEY = "juben_community_submissions_v1";
+  const STORAGE_KEY = "juben_community_submissions_v2";
   const VISITOR_KEY = "juben_community_visitor_v1";
   // 公开云端库：无需登录，所有人提交后彼此可见
   const CLOUD_URL = "https://mantledb.sh/v2/juben-tiepi-public-v1/community";
+  const CLOUD_EPOCH = "2026-08-21T18:35:00.000Z"; // 早于此的本机缓存忽略，避免删库后又被写回
 
   const DIM_LABELS = [
     "行动欲", "共情", "野心", "羁绊", "掌控", "牺牲",
@@ -66,7 +67,10 @@
 
   function loadLocal() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      if (!Array.isArray(list)) return [];
+      // 丢弃清空时间点之前的本机记录
+      return list.filter((s) => String(s.at || "") >= CLOUD_EPOCH);
     } catch (e) {
       return [];
     }
