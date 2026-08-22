@@ -73,6 +73,7 @@
     const aliases = {
       怀宁: "怀宁公主",
       晏栖: "宴栖",
+      黛丽拉: "黛利拉",
     };
     return aliases[raw] || raw;
   }
