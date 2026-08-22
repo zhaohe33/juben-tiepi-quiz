@@ -67,6 +67,14 @@
     return aliases[raw] || raw;
   }
 
+  function canonicalName(s) {
+    const raw = String(s || "").trim();
+    const aliases = {
+      怀宁: "怀宁公主",
+    };
+    return aliases[raw] || raw;
+  }
+
   function norm(s) {
     return String(s || "")
       .trim()
@@ -76,7 +84,7 @@
   }
 
   function roleKey(book, name) {
-    return norm(canonicalBook(book)) + "|" + norm(name);
+    return norm(canonicalBook(book)) + "|" + norm(canonicalName(name));
   }
 
   function loadLocal() {
@@ -151,9 +159,9 @@
     const books = splitParts(canonicalBook(s.book)).map(canonicalBook);
     const names = splitParts(s.name);
     if (books.length > 1 && books.length === names.length) {
-      return names.map((name, i) => ({ ...s, book: canonicalBook(books[i]), name }));
+      return names.map((name, i) => ({ ...s, book: canonicalBook(books[i]), name: canonicalName(name) }));
     }
-    return [{ ...s, book: canonicalBook(s.book), name: s.name }];
+    return [{ ...s, book: canonicalBook(s.book), name: canonicalName(s.name) }];
   }
 
   function mergeSubmissions(localList, remoteList) {
@@ -161,7 +169,7 @@
     [...remoteList, ...localList].forEach((raw) => {
       expandCombo(raw).forEach((s) => {
         if (!s || !s.book || !s.name || !Array.isArray(s.v) || s.v.length !== 12) return;
-        s = { ...s, book: canonicalBook(s.book) };
+        s = { ...s, book: canonicalBook(s.book), name: canonicalName(s.name) };
         const k = roleKey(s.book, s.name) + "::" + (s.visitorId || s.user || "");
         const prev = map.get(k);
         if (!prev || (s.at || "") > (prev.at || "")) map.set(k, s);
@@ -198,7 +206,7 @@
       });
       const unique = [...byVisitor.values()];
       const book = canonicalBook(unique[0].book.replace(/^《|》$/g, "").trim());
-      const name = unique[0].name.trim();
+      const name = canonicalName(unique[0].name.trim());
       const key = roleKey(book, name);
       const off = official.get(key);
       const ready = !!off || unique.length >= THRESHOLD;
@@ -428,7 +436,7 @@
     const v = [...document.querySelectorAll("#c_dims input[type=range]")].map((el) =>
       clampInt(el.value)
     );
-    return { book: canonicalBook(book), name, gender, v, quote, why, risk };
+    return { book: canonicalBook(book), name: canonicalName(name), gender, v, quote, why, risk };
   }
 
   function setError(msg) {
