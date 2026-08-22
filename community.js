@@ -155,6 +155,15 @@
     return [...map.values()];
   }
 
+  function officialMap() {
+    const m = new Map();
+    const base = typeof roles !== "undefined" && Array.isArray(roles) ? roles : [];
+    base.forEach((r) => {
+      if (r && r.book && r.name) m.set(roleKey(r.book, r.name), r);
+    });
+    return m;
+  }
+
   function buildGroups(submissions) {
     const groups = new Map();
     submissions.forEach((s) => {
@@ -163,6 +172,7 @@
       groups.get(k).push(s);
     });
 
+    const official = officialMap();
     const out = [];
     groups.forEach((subs) => {
       const byVisitor = new Map();
@@ -172,32 +182,35 @@
         if (!prev || (s.at || "") > (prev.at || "")) byVisitor.set(vid, s);
       });
       const unique = [...byVisitor.values()];
-      const book = unique[0].book.replace(/^《|》$/g, "").trim();
+      const book = canonicalBook(unique[0].book.replace(/^《|》$/g, "").trim());
       const name = unique[0].name.trim();
-      const ready = unique.length >= THRESHOLD;
-      const take = unique.slice(0, Math.max(THRESHOLD, unique.length));
-      const forAvg = unique.slice(0, THRESHOLD);
+      const key = roleKey(book, name);
+      const off = official.get(key);
+      const ready = !!off || unique.length >= THRESHOLD;
+      const forAvg = off ? [{ v: off.v }].concat(unique) : unique.slice(0, THRESHOLD);
       const pooled = ready
         ? {
             book,
             name,
-            gender: majorityGender(forAvg),
+            gender: off ? off.gender : majorityGender(forAvg),
             v: averageVectors(forAvg),
-            quote: pickText(forAvg, "quote", "由玩家征集入池的角色。"),
-            why: pickText(forAvg, "why", "三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。"),
-            risk: pickText(forAvg, "risk", "征集角色仅供娱乐，请以店家官方说明为准。"),
-            community: true,
+            quote: off ? off.quote : pickText(unique, "quote", "由玩家征集入池的角色。"),
+            why: off ? off.why : pickText(unique, "why", "三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。"),
+            risk: off ? off.risk : pickText(unique, "risk", "征集角色仅供娱乐，请以店家官方说明为准。"),
+            community: !off,
+            official: !!off,
             votes: unique.length,
           }
         : null;
 
       out.push({
-        key: roleKey(book, name),
+        key,
         book,
         name,
         count: unique.length,
-        need: THRESHOLD,
+        need: off ? unique.length : THRESHOLD,
         inPool: ready,
+        official: !!off,
         pooled,
         submissions: unique,
       });
@@ -341,11 +354,15 @@
   function getActiveRoles(baseRoles) {
     const base = Array.isArray(baseRoles) ? baseRoles : typeof roles !== "undefined" ? roles : [];
     const extra = getCommunityPoolRoles();
-    const seen = new Set(base.map((r) => roleKey(r.book, r.name)));
-    const merged = base.slice();
+    const merged = base.map((r) => ({ ...r }));
+    const seen = new Set(merged.map((r) => roleKey(r.book, r.name)));
     extra.forEach((r) => {
       const k = roleKey(r.book, r.name);
-      if (seen.has(k)) return;
+      const idx = merged.findIndex((x) => roleKey(x.book, x.name) === k);
+      if (idx >= 0) {
+        if (r.v && r.v.length === 12) merged[idx] = { ...merged[idx], v: r.v };
+        return;
+      }
       seen.add(k);
       if (typeof R === "function") {
         merged.push(R(r.book, r.name, r.gender, r.v, r.quote, r.why, r.risk));
@@ -421,11 +438,14 @@
     }
     box.innerHTML = groups
       .map((g) => {
-        const status = g.inPool
+        const status = g.official
+          ? '<span class="c-tag">已在角色池 · 直接平均</span>'
+          : g.inPool
           ? '<span class="c-tag">已入池 · 平均向量</span>'
           : '<span class="c-sub">征集中 ' + g.count + "/" + g.need + "</span>";
-        const avg =
-          g.inPool && g.pooled
+        const avg = g.official
+          ? '<div class="c-brief">已用 ' + g.count + " 份征集分与原画像取平均，无需再凑 3 人。</div>"
+          : g.inPool && g.pooled
             ? '<div class="c-brief">入池向量：[' + g.pooled.v.join(", ") + "]</div>"
             : '<div class="c-brief">还差 ' + Math.max(0, g.need - g.count) + " 人提交</div>";
         return (
@@ -494,7 +514,9 @@
       setMeta("本机已保存，云端同步失败。");
       return;
     }
-    if (g && g.inPool) {
+    if (g && g.official) {
+      setMeta("《" + payload.book + "》" + payload.name + " 已在角色池，已把征集分与原画像取平均。无需凑满 3 人。");
+    } else if (g && g.inPool) {
       setMeta("《" + payload.book + "》" + payload.name + " 已满 " + THRESHOLD + " 人，已按平均分入测试池。所有人刷新可见。");
     } else {
       setMeta(
