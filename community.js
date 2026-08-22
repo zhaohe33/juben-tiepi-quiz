@@ -163,6 +163,7 @@
   }
 
   function averageVectors(subs) {
+    if (!subs.length) return Array(12).fill(5);
     const v = [];
     for (let i = 0; i < 12; i++) {
       const sum = subs.reduce((a, s) => a + Number(s.v[i] || 5), 0);
@@ -182,6 +183,13 @@
 
   function clipText(s) {
     return String(s || "").trim().slice(0, TEXT_MAX);
+  }
+
+  function isValidSubmission(s) {
+    if (!s || !Array.isArray(s.v) || s.v.length !== 12) return false;
+    const flat = s.v.every((x) => Number(x) === 5);
+    const empty = !clipText(s.quote) && !clipText(s.why) && !clipText(s.risk);
+    return !(flat && empty);
   }
 
   function pickText(subs, field, fallback) {
@@ -270,25 +278,26 @@
         if (!prev || (s.at || "") > (prev.at || "")) byVisitor.set(vid, s);
       });
       const unique = [...byVisitor.values()];
+      const valid = unique.filter(isValidSubmission);
       const book = canonicalBook(unique[0].book.replace(/^《|》$/g, "").trim());
       const name = canonicalName(unique[0].name.trim());
       const key = roleKey(book, name);
       const off = official.get(key);
-      const ready = !!off || unique.length >= THRESHOLD;
-      const forAvg = off ? [{ v: off.v }].concat(unique) : unique.slice(0, THRESHOLD);
-      const pooled = ready
+      const ready = !!off || valid.length >= THRESHOLD;
+      const forAvg = off ? [{ v: off.v }].concat(valid) : valid;
+      const pooled = ready && forAvg.length
         ? {
             book,
             name,
             gender: off ? off.gender : majorityGender(forAvg),
             v: averageVectors(forAvg),
-            quote: off ? off.quote : pickText(unique, "quote", "由玩家征集入池的角色。"),
-            why: off ? off.why : pickText(unique, "why", "三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。"),
-            risk: off ? off.risk : pickText(unique, "risk", "征集角色仅供娱乐，请以店家官方说明为准。"),
-            notes: off ? [] : collectNotes(unique),
+            quote: off ? off.quote : pickText(valid, "quote", "由玩家征集入池的角色。"),
+            why: off ? off.why : pickText(valid, "why", "三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。"),
+            risk: off ? off.risk : pickText(valid, "risk", "征集角色仅供娱乐，请以店家官方说明为准。"),
+            notes: off ? [] : collectNotes(valid),
             community: !off,
             official: !!off,
-            votes: unique.length,
+            votes: valid.length,
           }
         : null;
 
@@ -296,8 +305,8 @@
         key,
         book,
         name,
-        count: unique.length,
-        need: off ? unique.length : THRESHOLD,
+        count: valid.length,
+        need: THRESHOLD,
         inPool: ready,
         official: !!off,
         pooled,
@@ -720,6 +729,10 @@
     }
     if (data.v.length !== 12) {
       setError("请完整拖动 12 维分数。");
+      return null;
+    }
+    if (!isValidSubmission(data)) {
+      setError("请至少调整一维分数，或填写金句 / 贴皮理由 / 坐牢点。");
       return null;
     }
 
