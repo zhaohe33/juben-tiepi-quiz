@@ -63,6 +63,7 @@
     const raw = String(s || "").trim().replace(/^《|》$/g, "");
     const aliases = {
       暗夜将至: "暗夜降至",
+      南墙二: "南墙贰",
     };
     return aliases[raw] || raw;
   }
@@ -71,6 +72,7 @@
     const raw = String(s || "").trim();
     const aliases = {
       怀宁: "怀宁公主",
+      晏栖: "宴栖",
     };
     return aliases[raw] || raw;
   }
