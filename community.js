@@ -68,6 +68,7 @@
     const aliases = {
       暗夜将至: "暗夜降至",
       南墙二: "南墙贰",
+      流氓: "流氓叙事",
     };
     return aliases[raw] || raw;
   }
