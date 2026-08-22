@@ -7,10 +7,14 @@
   const THRESHOLD = 3;
   const STORAGE_KEY = "juben_community_submissions_v2";
   const VISITOR_KEY = "juben_community_visitor_v1";
-  // 公开云端库：无需登录，所有人提交后彼此可见
-  const CLOUD_URL = "https://mantledb.sh/v2/juben-tiepi-public-v1/community";
+  // 公开云端库：10 个分片，每片最多约 300 条 / 60KB，合计约 3000 条
+  const CLOUD_BASE = "https://mantledb.sh/v2/juben-tiepi-public-v1/";
+  const CLOUD_LEGACY = CLOUD_BASE + "community";
+  const SHARD_COUNT = 10;
+  const MAX_PER_SHARD = 300;
+  const MAX_SUBMISSIONS = SHARD_COUNT * MAX_PER_SHARD;
+  const MAX_SHARD_BYTES = 60000;
   const CLOUD_EPOCH = "2026-08-21T18:35:00.000Z"; // 早于此的本机缓存忽略，避免删库后又被写回
-  const MAX_SUBMISSIONS = 300; // 云端单条约 64KB，300 条约 60KB，接近上限
 
   const DIM_LABELS = [
     "行动欲", "共情", "野心", "羁绊", "掌控", "牺牲",
@@ -192,23 +196,24 @@
     } catch (e) {}
   }
 
-  async function fetchCloud() {
+  function shardUrl(i) {
+    return CLOUD_BASE + "c" + i;
+  }
+
+  async function fetchCloudDoc(url) {
     try {
-      const res = await fetch(CLOUD_URL + "?t=" + Date.now(), { cache: "no-store" });
+      const res = await fetch(url + "?t=" + Date.now(), { cache: "no-store" });
       if (!res.ok) return null;
       const data = await res.json();
-      if (data && Array.isArray(data.submissions)) {
-        remoteSubmissions = mergeSubmissions(remoteSubmissions, data.submissions);
-      }
-      return data && typeof data === "object" ? data : { submissions: [], version: 1 };
+      return data && typeof data === "object" ? data : null;
     } catch (e) {
       return null;
     }
   }
 
-  async function putCloud(data) {
+  async function putCloudDoc(url, data) {
     try {
-      const res = await fetch(CLOUD_URL, {
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -219,9 +224,47 @@
     }
   }
 
+  function collectSubs(docs) {
+    let list = [];
+    docs.forEach((data) => {
+      if (data && Array.isArray(data.submissions)) list = mergeSubmissions(list, data.submissions);
+    });
+    return list;
+  }
+
+  function packShards(subs) {
+    const sorted = subs.slice().sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    let kept = sorted.slice(0, MAX_SUBMISSIONS);
+    const shards = [];
+    for (let i = 0; i < SHARD_COUNT; i++) {
+      let chunk = kept.slice(i * MAX_PER_SHARD, (i + 1) * MAX_PER_SHARD);
+      const doc = {
+        version: 2,
+        shard: i,
+        updatedAt: new Date().toISOString(),
+        submissions: chunk,
+      };
+      while (chunk.length > 40 && JSON.stringify(doc).length > MAX_SHARD_BYTES) {
+        chunk.pop();
+        doc.submissions = chunk;
+      }
+      shards.push(doc);
+    }
+    return shards;
+  }
+
+  async function fetchCloud() {
+    const urls = [CLOUD_LEGACY];
+    for (let i = 0; i < SHARD_COUNT; i++) urls.push(shardUrl(i));
+    const docs = await Promise.all(urls.map(fetchCloudDoc));
+    const submissions = collectSubs(docs);
+    remoteSubmissions = mergeSubmissions(remoteSubmissions, submissions);
+    return { submissions: remoteSubmissions };
+  }
+
   async function publishToCloud(payload) {
     for (let attempt = 0; attempt < 4; attempt++) {
-      const cur = (await fetchCloud()) || { submissions: [], version: 1 };
+      const cur = (await fetchCloud()) || { submissions: [] };
       const subs = Array.isArray(cur.submissions) ? cur.submissions.slice() : [];
       const nextSubs = subs.filter(
         (s) =>
@@ -231,20 +274,20 @@
           )
       );
       nextSubs.push(payload);
-      nextSubs.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
-      let kept = nextSubs.slice(0, MAX_SUBMISSIONS);
-      const next = {
-        version: 1,
-        updatedAt: new Date().toISOString(),
-        submissions: kept,
-      };
-      // MantleDB 免费档单条约 64KB，超出则再裁掉最旧的
-      while (kept.length > 80 && JSON.stringify(next).length > 60000) {
-        kept.pop();
-        next.submissions = kept;
-      }
-      if (await putCloud(next)) {
-        remoteSubmissions = next.submissions;
+      const shards = packShards(nextSubs);
+      const all = shards.flatMap((s) => s.submissions);
+      const writes = shards.map((doc, i) => putCloudDoc(shardUrl(i), doc));
+      writes.push(
+        putCloudDoc(CLOUD_LEGACY, {
+          version: 2,
+          sharded: true,
+          updatedAt: new Date().toISOString(),
+          submissions: shards[0] ? shards[0].submissions : [],
+        })
+      );
+      const okBits = await Promise.all(writes);
+      if (okBits.every(Boolean)) {
+        remoteSubmissions = all;
         return true;
       }
       await new Promise((r) => setTimeout(r, 200 + attempt * 150));
