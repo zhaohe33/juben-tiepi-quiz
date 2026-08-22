@@ -265,7 +265,7 @@ function showSetup(){
     </picture>
     <div class="cover-actions">
       <button class="cover-start" type="button" id="enterBtn" onclick="showSetup()">入局</button>
-      <div class="cover-meta" id="coverMeta">30题 · 六幕 · 8本48角 · 约6—10分钟</div>
+      <div class="cover-meta" id="coverMeta">30—50题 · 六幕 · 8本48角 · 约6—14分钟</div>
       <div class="cover-sub"><button type="button" class="cover-start" onclick="showCommunity()">角色征集</button></div>
     </div>
   </div>
@@ -295,6 +295,12 @@ function showSetup(){
       <button data-v="male">男性角色</button>
     </div>
     <p class="small">别选你想成为的人。选那一瞬间，你真正会做的事。</p>
+    <div class="seg" id="modeSeg" style="margin-top:18px">
+      <button class="active" data-v="quick">快速 · 30题</button>
+      <button data-v="precision">精细 · 40题</button>
+      <button data-v="deep">深度 · 50题</button>
+    </div>
+    <p class="small">精细 +10 题、深度 +20 题校准，角色相近时更准。深度约多 4 分钟。</p>
     <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="primary" onclick="startQuiz()">开始心测</button>
       <button class="ghost" onclick="showCommunity()">角色征集</button>
@@ -420,7 +426,7 @@ function showSetup(){
 
 </div>
 
-<script src="community.js?v=20260822r"></script>
+<script src="community.js?v=20260822t"></script>
 <script>
 
 
@@ -488,7 +494,8 @@ function showCheckpoint(stageIndex){
   document.getElementById("cptext").textContent=buildCheckpointText(stageIndex);
   document.getElementById("cpvisual").style.backgroundImage=`url("${STAGE_IMAGES[stageIndex]}")`;
   document.getElementById("cphint").textContent=meta.hint;
-  document.getElementById("cpbtn").textContent=stageIndex===5 ? "揭晓我的角色" : "赴下一幕";
+  const extraN=activeQ().length-30;
+  document.getElementById("cpbtn").textContent=stageIndex===5&&extraN>0?"进入校准题（"+extraN+"题）":stageIndex===5?"揭晓我的角色":"赴下一幕";
   cp.dataset.stage=String(stageIndex);
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -497,7 +504,12 @@ function continueAfterCheckpoint(){
   const stageIndex=Number(cp.dataset.stage||0);
   cp.classList.add("hidden");
   if(stageIndex===5){
-    calculate();
+    if(quizMode!=="quick"&&qi<activeQ().length){
+      document.getElementById("quiz").classList.remove("hidden");
+      renderQ();
+    }else{
+      calculate();
+    }
   }else{
     document.getElementById("quiz").classList.remove("hidden");
     renderQ();
@@ -717,6 +729,160 @@ const Q = [
 ]}
 ];
 
+
+const Q_EXTRA = [
+{c:"VII · 校准",q:"若上位必须放弃一条你坚信的原则，你会？",s:"这题专门拉开「理想」与「野心」。",o:[
+["原则不可退。位子再高，也不能活成自己讨厌的人。",{idealism:5,autonomy:4,moral:3}],
+["先看是什么原则。有些线可以谈，有些不行。",{moral:5,control:4,idealism:3}],
+["若值得，我可以先上去，再慢慢把规矩改回来。",{ambition:5,agency:4,control:3}],
+["我会找第三条路，不必非在当天二选一。",{agency:5,control:3,moral:3}],
+["不上也罢。我不靠出卖自己换位置。",{autonomy:5,idealism:4,vulnerability:2}]
+]},
+{c:"VII · 校准",q:"委屈到极点时，你更可能怎么做？",s:"这题专门拉开「敏感」与「输出」。",o:[
+["什么都不说，等它自己过去。",{vulnerability:5,control:3,sacrifice:2}],
+["找唯一信任的人，把话说完。",{empathy:4,vulnerability:4,loyalty:3}],
+["当场爆发，至少不让它烂在心里。",{expression:5,agency:3,vulnerability:3}],
+["用玩笑或攻击把场面盖住。",{expression:4,vulnerability:3,control:2}],
+["写下来、理一理，再决定要不要说。",{control:4,autonomy:3,vulnerability:3}]
+]},
+{c:"VII · 校准",q:"若只能保住一种关系，你更无法失去？",s:"这题专门拉开「情爱」与「羁绊」。",o:[
+["那个明确选了我的人。",{romance:5,vulnerability:4,expression:3}],
+["养我、护我、看着我长大的人。",{loyalty:5,sacrifice:4,empathy:3}],
+["一起扛过事、彼此把后背交出去的人。",{loyalty:4,agency:3,sacrifice:3}],
+["我在乎的位置与名声。",{ambition:4,control:4,autonomy:3}],
+["我对自己的人生选择权。",{autonomy:5,idealism:3,vulnerability:2}]
+]},
+{c:"VII · 校准",q:"你更认同哪一句话？",s:"这题专门拉开「理想」与「灰度」。",o:[
+["有些事，对错比输赢重要。",{idealism:5,empathy:3,moral:2}],
+["活下来的人，才有资格谈对错。",{moral:5,ambition:3,control:3}],
+["我护住的人不受伤害，比什么都重要。",{loyalty:5,sacrifice:4,romance:2}],
+["规则多半是弱者给自己写的安慰。",{moral:4,autonomy:4,control:2}],
+["我不急着评价，我先看这一局我要站在哪边。",{agency:4,control:4,moral:3}]
+]},
+{c:"VII · 校准",q:"别人替你做主时，你最接近哪一种反应？",s:"这题专门拉开「自我」与「掌控」。",o:[
+["表面配合，心里已经在另做打算。",{autonomy:5,control:4,vulnerability:2}],
+["直接拒绝。我的人生不能由别人代签。",{autonomy:5,expression:4,idealism:2}],
+["若真是为我好，我可以先听着。",{empathy:3,loyalty:3,control:2}],
+["看谁在做主。信的人，我可以让一步。",{loyalty:4,control:3,autonomy:2}],
+["我会把局面接过来，让事情回到我手里。",{control:5,agency:4,ambition:2}]
+]},
+{c:"VII · 校准",q:"在一群人里，你更常自动成为哪一种人？",s:"这题专门拉开「牺牲」与「行动欲」。",o:[
+["默默补位的人。谁缺了，我就顶上。",{sacrifice:5,empathy:4,loyalty:3}],
+["先冲上去的人。局面不能一直僵着。",{agency:5,expression:3,ambition:2}],
+["统筹的人。先看清，再动手。",{control:5,moral:3,agency:2}],
+["调和的人。先把人的情绪接住。",{empathy:5,romance:2,sacrifice:2}],
+["只对自己负责的人。不主动背别人的局。",{autonomy:5,vulnerability:2,control:2}]
+]},
+{c:"VII · 校准",q:"看见对手崩溃，你的第一瞬间更像？",s:"这题专门拉开「共情」与「野心」。",o:[
+["也会难受，胜利并不总是好看。",{empathy:5,idealism:3,vulnerability:3}],
+["这是他选择的代价。",{moral:4,control:3,ambition:2}],
+["趁势把该推进的事推进。",{ambition:5,agency:4,control:3}],
+["先观察。崩溃里常常藏着真正的信息。",{control:5,moral:3,agency:2}],
+["与我无关。我只盯自己的下一步。",{autonomy:5,ambition:3,control:2}]
+]},
+{c:"VII · 校准",q:"桌上需要有人打破沉默，你会？",s:"这题专门拉开「输出」与「掌控」。",o:[
+["我来。沉默太久，局会死。",{expression:5,agency:4,ambition:2}],
+["等最合适的人开口，我不抢第一棒。",{control:4,empathy:3,vulnerability:2}],
+["抛一个问题，把话引到关键处。",{control:5,moral:3,expression:2}],
+["沉默也是策略，不必急着填。",{control:5,vulnerability:2,autonomy:3}],
+["先私下把最重要的人聊清楚。",{empathy:4,loyalty:3,control:3}]
+]},
+{c:"VII · 校准",q:"为了救一个人，需要骗过全场，你会？",s:"这题专门拉开「理想」与「灰度」。",o:[
+["不骗。谎言会伤到比今天更多的人。",{idealism:5,empathy:3,moral:2}],
+["会骗。结果若值得，我背这口锅。",{moral:5,loyalty:4,sacrifice:3}],
+["只骗必要的那一部分，其余尽量真实。",{control:4,moral:4,agency:3}],
+["看救的是谁。若是我的人，我会做。",{loyalty:5,romance:3,moral:3}],
+["我会找别的办法，骗是最后一步。",{agency:5,idealism:3,control:3}]
+]},
+{c:"VII · 校准",q:"爱人要求你改变一个重要决定，你会？",s:"这题专门拉开「情爱」与「自我」。",o:[
+["不改。再爱也不能把人生交出去。",{autonomy:5,idealism:3,vulnerability:2}],
+["会认真听，但决定仍要我自己签。",{autonomy:4,romance:3,empathy:3}],
+["若我也爱他，有些改变可以谈。",{romance:5,empathy:4,loyalty:3}],
+["看是什么决定。底线之上可以商量。",{control:4,moral:3,romance:3}],
+["我会改，但我要他明白这有多重。",{romance:4,sacrifice:4,expression:3}]
+]}
+];
+
+const Q_DEEP = [
+{c:"VIII · 深校准",q:"你更常为谁让路？",s:"二次拉开「牺牲」与「羁绊」。",o:[
+["只要是我认定的人，我可以后撤一步。",{loyalty:5,sacrifice:4,romance:3}],
+["谁更需要这笔资源，就给谁。",{empathy:5,sacrifice:4,idealism:3}],
+["我先顾自己。不是冷血，是我也只有一条命。",{autonomy:5,agency:3,vulnerability:2}],
+["看谁更扛得住损失。局不能散。",{control:5,moral:4,ambition:3}],
+["我会顶上去，但希望有人看见。",{sacrifice:5,expression:3,vulnerability:4}]
+]},
+{c:"VIII · 深校准",q:"局面僵住、所有人都在等，你更像？",s:"二次拉开「行动欲」与「掌控」。",o:[
+["我先动。再不动，机会就死了。",{agency:5,ambition:3,expression:2}],
+["我先看清谁想要什么，再决定推哪一块。",{control:5,moral:3,agency:2}],
+["等。有时候不动才是最大的动。",{control:5,vulnerability:2,autonomy:3}],
+["我会抛一个能打破僵局的问题。",{expression:4,control:4,agency:3}],
+["谁爱动谁动。我不替所有人负责。",{autonomy:5,moral:3,vulnerability:2}]
+]},
+{c:"VIII · 深校准",q:"一个你同情的人，做了你并不认同的事，你会？",s:"二次拉开「共情」与「灰度」。",o:[
+["仍会替他留一点余地。",{empathy:5,loyalty:3,vulnerability:3}],
+["同情归同情，错还是要指出来。",{idealism:4,expression:4,moral:3}],
+["我会先想：他为什么只能走到这一步。",{moral:5,empathy:3,control:3}],
+["这不关我事。我不替别人的选择洗白。",{autonomy:5,control:3,agency:2}],
+["若他是我的人，我会帮他收场。",{loyalty:5,sacrifice:4,moral:3}]
+]},
+{c:"VIII · 深校准",q:"关于爱，你更接近哪一种？",s:"二次拉开「输出」与「情爱」。",o:[
+["爱要说出来，也要做出来。",{romance:5,expression:4,loyalty:3}],
+["爱不必天天挂在嘴上，关键时候在就够了。",{loyalty:5,sacrifice:4,romance:3}],
+["我更怕爱变成交换。",{autonomy:5,vulnerability:4,romance:3}],
+["爱可以热烈，但我仍要留一点清醒。",{control:4,romance:4,moral:3}],
+["我不确定自己要不要那种浓度。",{vulnerability:4,autonomy:4,romance:2}]
+]},
+{c:"VIII · 深校准",q:"自己人明显做错了，却指望你帮忙圆场，你会？",s:"二次拉开「羁绊」与「理想」。",o:[
+["圆。先把人护住，账以后再算。",{loyalty:5,sacrifice:4,moral:3}],
+["不圆。帮一次，下次只会更过分。",{idealism:4,autonomy:4,control:3}],
+["看场合。当众拆台和私下说，不是一回事。",{control:5,moral:4,expression:3}],
+["我会帮他，但也会让他知道代价。",{loyalty:4,moral:4,agency:3}],
+["谁做的谁担。亲情不是免死金牌。",{idealism:5,autonomy:4,moral:3}]
+]},
+{c:"VIII · 深校准",q:"被误解后，你最熟悉的路径是？",s:"二次拉开「敏感」与「输出」。",o:[
+["先忍，忍到某个瞬间一次性说清。",{vulnerability:5,expression:4,control:2}],
+["立刻解释。误会过夜会发酵。",{expression:5,agency:3,romance:2}],
+["不解释。懂的人不必说，不懂的说了也没用。",{autonomy:5,vulnerability:3,control:3}],
+["用别的行动替自己说话。",{agency:4,sacrifice:3,loyalty:3}],
+["会反复想，但表面装作无所谓。",{vulnerability:5,control:4,expression:1}]
+]},
+{c:"VIII · 深校准",q:"前程与旧部只能留一边，你更可能？",s:"二次拉开「野心」与「羁绊」。",o:[
+["带能带的人一起走。",{loyalty:5,ambition:4,agency:3}],
+["先顾前程。不是无情，是机会不等人。",{ambition:5,control:4,autonomy:3}],
+["我会拖一拖，看有没有折中。",{control:5,moral:3,empathy:3}],
+["看谁更值得。感情不能凌驾判断。",{moral:4,control:4,ambition:3}],
+["旧部若不愿跟，我也不会勉强。",{autonomy:4,loyalty:3,sacrifice:2}]
+]},
+{c:"VIII · 深校准",q:"正义必须喊出来时才有效，你认同吗？",s:"二次拉开「理想」与「输出」。",o:[
+["认同。沉默有时等于站错边。",{idealism:5,expression:5,agency:3}],
+["不一定。有些正义更适合做，而不是说。",{sacrifice:4,control:4,idealism:3}],
+["看场合。喊出来之前，要先算代价。",{control:5,moral:4,ambition:2}],
+["我更信结果。喊不喊没那么重要。",{ambition:4,moral:3,agency:3}],
+["若喊出来只会害了想护的人，我会闭嘴。",{loyalty:5,sacrifice:4,idealism:2}]
+]},
+{c:"VIII · 深校准",q:"你最难拒绝哪一种请求？",s:"二次拉开「共情」与「牺牲」。",o:[
+["我已经很难了，但你可以再靠我一下。",{sacrifice:5,empathy:4,loyalty:3}],
+["只有你能帮我这个忙。",{loyalty:4,empathy:4,sacrifice:3}],
+["我不求回报，只想把这件事做成。",{idealism:4,agency:4,sacrifice:3}],
+["给我一点时间，我会给你答案。",{control:4,autonomy:3,empathy:2}],
+["我很难拒绝，但我会先问自己要什么。",{autonomy:4,vulnerability:4,empathy:3}]
+]},
+{c:"VIII · 深校准",q:"若只能留一个标签，你希望别人记住你是？",s:"综合校准，拉开整体人格重心。",o:[
+["敢扛事、敢选择的人。",{agency:5,ambition:4,control:2}],
+["始终没有把原则卖掉的人。",{idealism:5,autonomy:4,moral:3}],
+["对认定的人极偏极护的人。",{loyalty:5,romance:3,sacrifice:3}],
+["把情绪与真相都说出来的人。",{expression:5,vulnerability:4,romance:2}],
+["在灰度里仍尽量没变坏的人。",{moral:5,empathy:3,control:3}]
+]}
+];
+
+let quizMode="quick";
+function activeQ(){
+  if(quizMode==="deep")return Q.concat(Q_EXTRA).concat(Q_DEEP);
+  if(quizMode==="precision")return Q.concat(Q_EXTRA);
+  return Q;
+}
+
 const SIMPLE_OPTIONS = [["也许只是有人，不愿让我独自走完这段夜色。", "先不回头。真想留下我的人，自会追上来。", "我更想知道，此刻叫住我，他究竟想换走什么。", "我会回头。有些名字，一旦错过便再无来日。", "先听脚步。声音会骗人，来人不会。"], ["烧了吧。真正重要的真相，从来不会只活在一张纸上。", "先查清楚。没有证据之前，我连失望都不愿浪费。", "我更在意，究竟是谁希望我开始怀疑他。", "会疼，但我仍想听他亲口说一次。", "哪怕是真的，我也想知道，他为何宁愿骗我。"], ["住在最高处。风虽冷，至少看得见远方。", "住进旧院。有人等一盏灯、一顿饭，便够了。", "住在最繁华的地方。人心复杂，消息也最真。", "住在城门边。哪日厌了，转身便走。", "住进荒园。没人喜欢的地方，我偏想亲手种出春天。"], ["也好。至少我不愿成为别人为难的理由。", "听久了，倒像一句温柔的规训。", "比起懂事，我更想被说一句：你真有本事。", "我可以体谅，但不代表我愿意听命。", "若懂事真能换来我想要的，也未尝不可。"], ["我会先替他说一句：事情还没有盖棺定论。", "先带他离开。真相可以晚一点，人不能一直被围着。", "我不会急着站队。最热闹的时候，往往最容易看错。", "若是我认定的人，我会站过去，再慢慢问原因。", "我会记住，今天是谁最先往伤口上撒了盐。"], ["最难忍的，是他替我决定什么才算幸福。", "若真为我好，就不该让我最后一个知道。", "被利用不可怕，可怕的是连利用都显得多余。", "我先看结果。许多话，结果不好时才最刺耳。", "最可笑的是，我明知不对，却还是舍不得。"], ["我会救更多的人，然后用余生记住那一个。", "我会救我在乎的人。众生太远，我只有这一双手。", "我会找第三条路。所谓二选一，多半只是命运偷懒。", "我想先知道，他希望我怎样选。", "我不先许诺。我会押在最有可能活下来的那边。"], ["明明握着刀，却仍愿意收手。", "被命运摔碎过无数次，还肯站起来。", "早已看透全局，却懒得向任何人证明。", "敢在人群里坦然承认：我就是偏心。", "做错了不躲，也真的肯把代价背走。"], ["做。骂名由我背，事情总得有人去完成。", "会做，但我会为自己留一条还能回头的路。", "若必须踩着无辜的人过去，我宁愿绕远。", "先问一句：它值不值得我把自己也赔进去。", "若是为了我认定的人，世人懂不懂都无所谓。"], ["话会很重，可我其实只是不想让他就这样走。", "我会先离开。等风停了，再回来把话说完。", "越在意，我反而越冷，冷得像从未动心。", "我会先退一步，可那道伤不会立刻消失。", "底线一旦碎了，我真的能转身不回头。"], ["有些东西不能退。哪怕注定输，也要守到最后。", "先算清楚还能换回什么，再决定这一仗值不值得。", "既然要牺牲谁，就该先问那个人愿不愿意。", "我不怕败，只怕往后想起今日，会看不起自己。", "若城里还有我要带走的人，我先带他回家。"], ["拿我的信任，替自己换一条更好的路。", "明明有苦衷，却始终不肯把我当成可以并肩的人。", "口口声声说爱，最后却还是先护住了体面。", "为了所谓大局，便默认我理应成为代价。", "比背叛更刺人的，是他竟觉得我永远不会发现。"], ["至少让他在走到结局之前，真真切切被爱过一次。", "我会一直试。命运写得再满，也总会漏下一笔。", "我不会告诉他。有些真相，提前知道只是另一种刑罚。", "我会告诉他。那是他的人生，不该由我替他蒙住眼睛。", "我会先问自己：我究竟是在救他，还是不肯失去。"], ["你若要去远方便去，我会替你留一盏灯。", "我要你清清楚楚地选我，不要让我用猜来证明爱。", "我会替你把路铺好，哪怕你永远不知道是谁做的。", "我爱你，所以也愿意承认你有离开的自由。", "我爱你，但爱从来不该替错误赦免。"], ["先让自己再也不必仰人鼻息。", "先护住那些曾经想护，却没能护住的人。", "先改一改这世上的规矩，至少别总让弱者认命。", "我什么都不做，先看看谁会因为我手里有权而变脸。", "我会享受它，也承认权力迟早会在我身上留下痕迹。"], ["他们以为我洒脱，其实我只是早已懒得解释。", "他们以为我心软，其实我只是有一条不愿越过的线。", "他们以为我冷，不过是我不敢先伸手。", "他们以为我野心大，其实我只是太怕再一次无能为力。", "他们以为我无所谓，可很多事我至今一字未忘。"], ["失去一个真正看懂过我的人。", "失去替自己选择人生的权利。", "失去我一直相信着的那点东西。", "失去那个仍有人需要我的位置。", "失去对局势最后一点掌握。"], ["我会说清楚：爱我，不等于替我关上门。", "我会先想，他究竟有多怕失去，才会这样握紧。", "若我也爱他，有些边界不是不能慢慢谈。", "我会越靠越远，直到连解释都懒得留下。", "我会把主动权重新拿回来，让爱回到平等的位置。"], ["结果留下就够了，至于后来的人怎样说我，并不重要。", "我想留下完整的真相，至少让后来的人自己判断。", "我只想让那些被我护过的人，真正活到明天。", "什么都不留。做过就是做过，我不替自己补写注脚。", "我会留一封信，只给一个人看。"], ["明明担心得要命，嘴上却只剩一句“随你”。", "明明已经撑不住了，还是会说“我来吧”。", "明明输了，也要先把最后一点体面撑住。", "明明想让他留下，却偏偏把门替他打开。", "明明很在乎，还是会先问自己一句：值得吗。"], ["夜深以后，我总会反复想起白天说错的那些话。", "终于安静了，我才有空听见自己真正想要什么。", "旧人旧事总会在无人处忽然回来。", "一个人也没什么，我早就学会把日子过下去。", "偶尔会觉得，也许从来没人真正见过完整的我。"], ["记忆。若连曾经都不记得，重来还有什么意义。", "能力。哪怕失去一切，我也可以重新学。", "那个人的名字。", "原则。活下来，也不能活成一个自己都认不出的陌生人。", "野心。那是我和这个世界谈判的筹码。"], ["我已经做了很多，可到最后，像是什么都没发生过。", "他们爱我，可那从来不是我真正想要的方式。", "别人比我更惨，于是我连喊疼都显得矫情。", "我不是输不起，我只是不甘心输得如此不明不白。", "我越难受，反而越安静，安静得像什么都没发生。"], ["我想要一个人，不问输赢，也愿意站在我这边。", "我想有一天，再也不必向任何人证明自己。", "我想真正做成一件，值得我记很多年的事。", "我想对得起那些曾经把信任交给我的人。", "我只想活得自由些，也真实些。"], ["我可以爱他，但不会替他把错写成对。", "我会走。再深的爱，也不该让我背叛自己。", "我会留下，但他做过的事，必须由他亲自面对。", "如果他的狠恰好能带我去我要去的地方，我未必介意。", "我最怕的是，明知他不值得，却还是觉得他值得。"], ["我会下意识把所有人的话接起来，不愿让谁掉在故事外。", "我更习惯先看。等人心和局势都露出底牌，再开口。", "别人一难过，我往往比他自己更早发现。", "我很容易在人群里，只和一两个人建立很深的牵连。", "我会先把自己的角色活明白，再去碰别人的命运。"], ["若真把舞台给我，我未必会退。", "可以，但我得先把每一条逻辑都吃透。", "若这个人所做的一切我真的无法理解，我会演得很痛苦。", "我更喜欢把情绪藏在字里，不愿一直站在灯下。", "只要这个角色值得，我可以逼自己走到最前面。"], ["我忽然明白，他为什么会做出一件所有人都说错的事。", "我发现，他爱人的方式竟和我如此相似。", "我终于等到一个可以把所有话都说尽的瞬间。", "我开始替角色做决定，而不是替现实里的自己。", "我忽然看见，他真正想要的，从来不是文本写在表面的东西。"], ["我仍然相信，人可以自己决定最后成为什么样的人。", "后来我终于不再等谁来救我。", "世人可以忘了我，却别忘了我们为何走到这里。", "我不后悔爱过你，只遗憾有些话说得太迟。", "赢也好，输也罢，至少这一局是我自己下完的。"], ["至少有人记得，我曾很认真地爱过。", "至少最后那条路，是我亲手选的。", "再难的时候，我也没有活成自己最厌恶的样子。", "我把真正想做的事，做成了。", "我从不完美，可我也从未假装无辜。"]];
 SIMPLE_OPTIONS.forEach((opts,i)=>{
   if(!Q[i]) return;
@@ -788,6 +954,10 @@ document.querySelectorAll("#genderSeg button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#genderSeg button").forEach(x=>x.classList.remove("active"));
   b.classList.add("active"); genderFilter=b.dataset.v;
 });
+document.querySelectorAll("#modeSeg button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#modeSeg button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); quizMode=b.dataset.v;
+});
 
 function startQuiz(){
   qi=0; answers=[]; resetScores();
@@ -797,12 +967,13 @@ function startQuiz(){
 }
 function resetScores(){DIMS.forEach(d=>{score[d]=0;count[d]=0})}
 function renderQ(){
-  const x=Q[qi];
+  const quiz=activeQ();
+  const x=quiz[qi];
   document.getElementById("qchapter").textContent=x.c;
   document.getElementById("qtext").textContent=x.q;
   document.getElementById("qsub").textContent=x.s;
-  document.getElementById("counter").textContent=`${qi+1} / ${Q.length}`;
-  document.getElementById("prog").style.width=((qi)/Q.length*100)+"%";
+  document.getElementById("counter").textContent=`${qi+1} / ${quiz.length}`;
+  document.getElementById("prog").style.width=((qi)/quiz.length*100)+"%";
   const box=document.getElementById("options"); box.innerHTML="";
   x.o.forEach((op,i)=>{
     const b=document.createElement("button"); b.className="opt";
@@ -813,7 +984,9 @@ function renderQ(){
 }
 function pick(i){
   answers[qi]=i; qi++;
-  if(qi % 5 === 0){
+  const total=activeQ().length;
+  if(qi>=total){calculate();return;}
+  if(qi%5===0&&qi<=30){
     showCheckpoint((qi/5)-1);
     return;
   }
@@ -852,7 +1025,8 @@ function calculate(){
 
   // 把每题的每个选项也做“题内标准化”。
   // 这样比较的是：在这一道题里，这个选项真正偏向什么，而不是绝对加了几分。
-  const optionVectors=Q.map(q=>
+  const quiz=activeQ();
+  const optionVectors=quiz.map(q=>
     q.o.map((op,oi)=>
       DIMS.map(d=>{
         const vals=q.o.map(x=>x[1][d]||0);
@@ -880,7 +1054,7 @@ function calculate(){
     let exactFirst=0;
     let topTwo=0;
 
-    Q.forEach((q,qi)=>{
+    quiz.forEach((q,qi)=>{
       const utilities=optionVectors[qi].map(v=>dot(roleZ[index],v));
       const order=[0,1,2,3,4].sort((a,b)=>utilities[b]-utilities[a]);
 
@@ -904,8 +1078,8 @@ function calculate(){
     // 同时奖励“完全踩中角色本能”的题数。
     // 这是为了让两个总分相近的人设，也能通过关键题拉开。
     const fingerprint = raw*0.78
-      + (exactFirst/Q.length)*0.15
-      + (topTwo/Q.length)*0.07;
+      + (exactFirst/quiz.length)*0.15
+      + (topTwo/quiz.length)*0.07;
 
     return {...r, fingerprint, exactFirst, topTwo};
   }).sort((a,b)=>
@@ -931,7 +1105,7 @@ function calculate(){
   const user=[];
   DIMS.forEach(d=>{
     let total=0, n=0;
-    Q.forEach((q,qi)=>{
+    quiz.forEach((q,qi)=>{
       const val=q.o[answers[qi]][1][d];
       if(val!==undefined){total+=val;n++;}
     });
@@ -946,7 +1120,7 @@ function showResult(ranked,user){
   const top=ranked[0];
   document.getElementById("rbook").textContent=`《${top.book}》`;
   document.getElementById("rname").textContent=top.name;
-  document.getElementById("rmatch").textContent=`贴皮指数 ${top.match}%`;
+  document.getElementById("rmatch").textContent=`贴皮指数 ${top.match}%${quizMode==="deep"?" · 深度测算":quizMode==="precision"?" · 精细测算":""}`;
   let quote=top.quote;
   if(top.community && Array.isArray(top.notes) && top.notes.length){
     const notes=top.notes.slice();
@@ -1104,7 +1278,7 @@ window.renderHomeRoster=function renderHomeRoster(){
   const meta=document.getElementById("coverMeta");
   if(meta){
     const nQ=(typeof Q!=="undefined"&&Q.length)?Q.length:30;
-    meta.textContent=nQ+"题 · 六幕 · "+books.length+"本"+pool.length+"角 · 约6—10分钟";
+    meta.textContent=nQ+"—50题 · 六幕 · "+books.length+"本"+pool.length+"角 · 约6—14分钟";
   }
 }
 
