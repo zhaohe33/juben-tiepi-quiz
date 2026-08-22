@@ -1,9 +1,80 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-22T03:40:00.000Z",
-  "source": "merged-anye-jiangzhi",
-  "count": 139,
+  "updatedAt": "2026-08-22T03:42:00.000Z",
+  "count": 144,
   "submissions": [
+    {
+      "book": "野菩萨",
+      "name": "归乡",
+      "gender": "female",
+      "v": [
+        3,
+        10,
+        2,
+        8,
+        2,
+        10,
+        2,
+        7,
+        3,
+        7,
+        1,
+        8
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_5azlgar3ofbmt3u0fq1",
+      "at": "2026-08-22T03:41:45.241Z"
+    },
+    {
+      "book": "草芥",
+      "name": "宴宁",
+      "gender": "female",
+      "v": [
+        10,
+        2,
+        10,
+        7,
+        10,
+        5,
+        10,
+        10,
+        10,
+        9,
+        8,
+        8
+      ],
+      "quote": "爱这个字太浅",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_eyb6pvo8vlmt3u0cvg",
+      "at": "2026-08-22T03:41:41.549Z"
+    },
+    {
+      "book": "流芳",
+      "name": "杨玉笙",
+      "gender": "male",
+      "v": [
+        5,
+        5,
+        5,
+        5,
+        4,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_4vplbfty12smt3tzp5c",
+      "at": "2026-08-22T03:41:11.094Z"
+    },
     {
       "book": "暗河",
       "name": "魏雨彤",
@@ -1061,8 +1132,56 @@
       "at": "2026-08-22T03:26:25.677Z"
     },
     {
-      "book": "野菩萨，如故，流氓叙事",
-      "name": "生吞，李文瑙，以撒",
+      "book": "野菩萨",
+      "name": "生吞",
+      "gender": "male",
+      "v": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "quote": "你死我活至死方休",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_jrv53hswakcmt3tgc16",
+      "at": "2026-08-22T03:26:15.464Z"
+    },
+    {
+      "book": "如故",
+      "name": "李文瑙",
+      "gender": "male",
+      "v": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "quote": "你死我活至死方休",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_jrv53hswakcmt3tgc16",
+      "at": "2026-08-22T03:26:15.464Z"
+    },
+    {
+      "book": "流氓叙事",
+      "name": "以撒",
       "gender": "male",
       "v": [
         5,

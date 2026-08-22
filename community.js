@@ -124,14 +124,33 @@
     return texts[0];
   }
 
+  function splitParts(s) {
+    return String(s || "")
+      .split(/[，,、/／|]+/)
+      .map((x) => x.trim().replace(/^《|》$/g, ""))
+      .filter(Boolean);
+  }
+
+  function expandCombo(s) {
+    if (!s || !s.book || !s.name) return [s];
+    const books = splitParts(canonicalBook(s.book)).map(canonicalBook);
+    const names = splitParts(s.name);
+    if (books.length > 1 && books.length === names.length) {
+      return names.map((name, i) => ({ ...s, book: canonicalBook(books[i]), name }));
+    }
+    return [{ ...s, book: canonicalBook(s.book), name: s.name }];
+  }
+
   function mergeSubmissions(localList, remoteList) {
     const map = new Map();
-    [...remoteList, ...localList].forEach((s) => {
-      if (!s || !s.book || !s.name || !Array.isArray(s.v) || s.v.length !== 12) return;
-      s = { ...s, book: canonicalBook(s.book) };
-      const k = roleKey(s.book, s.name) + "::" + (s.visitorId || s.user || "");
-      const prev = map.get(k);
-      if (!prev || (s.at || "") > (prev.at || "")) map.set(k, s);
+    [...remoteList, ...localList].forEach((raw) => {
+      expandCombo(raw).forEach((s) => {
+        if (!s || !s.book || !s.name || !Array.isArray(s.v) || s.v.length !== 12) return;
+        s = { ...s, book: canonicalBook(s.book) };
+        const k = roleKey(s.book, s.name) + "::" + (s.visitorId || s.user || "");
+        const prev = map.get(k);
+        if (!prev || (s.at || "") > (prev.at || "")) map.set(k, s);
+      });
     });
     return [...map.values()];
   }
@@ -274,15 +293,8 @@
   async function publishToCloud(payload) {
     for (let attempt = 0; attempt < 4; attempt++) {
       const cur = (await fetchCloud()) || { submissions: [] };
-      const subs = Array.isArray(cur.submissions) ? cur.submissions.slice() : [];
-      const nextSubs = subs.filter(
-        (s) =>
-          !(
-            roleKey(s.book, s.name) === roleKey(payload.book, payload.name) &&
-            (s.visitorId || s.user) === payload.visitorId
-          )
-      );
-      nextSubs.push(payload);
+      const pieces = expandCombo(payload);
+      const nextSubs = mergeSubmissions(cur.submissions || [], pieces);
       const shards = packShards(nextSubs);
       const all = shards.flatMap((s) => s.submissions);
       const writes = shards.map((doc, i) => putCloudDoc(shardUrl(i), doc));
