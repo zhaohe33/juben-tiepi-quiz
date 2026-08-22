@@ -203,15 +203,26 @@
 
   function splitParts(s) {
     return String(s || "")
-      .split(/[，,、/／|]+/)
+      .split(/[，,、/／|\s]+/)
       .map((x) => x.trim().replace(/^《|》$/g, ""))
       .filter(Boolean);
   }
 
   function expandCombo(s) {
     if (!s || !s.book || !s.name) return [s];
-    const books = splitParts(canonicalBook(s.book)).map(canonicalBook);
-    const names = splitParts(s.name);
+    const bookRaw = canonicalBook(String(s.book || "").trim().replace(/^《|》$/g, ""));
+    const nameRaw = String(s.name || "").trim();
+    if (
+      bookRaw.replace(/\s+/g, "") === "野菩萨旧梦" &&
+      nameRaw.replace(/\s+/g, "") === "远望紫烟"
+    ) {
+      return [
+        { ...s, book: "野菩萨", name: "远望" },
+        { ...s, book: "旧梦", name: "紫烟" },
+      ];
+    }
+    const books = splitParts(bookRaw).map(canonicalBook);
+    const names = splitParts(nameRaw).map(canonicalName);
     if (books.length > 1 && books.length === names.length) {
       return names.map((name, i) => ({ ...s, book: canonicalBook(books[i]), name: canonicalName(name) }));
     }
