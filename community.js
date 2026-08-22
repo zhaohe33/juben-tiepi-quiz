@@ -10,6 +10,7 @@
   // 公开云端库：无需登录，所有人提交后彼此可见
   const CLOUD_URL = "https://mantledb.sh/v2/juben-tiepi-public-v1/community";
   const CLOUD_EPOCH = "2026-08-21T18:35:00.000Z"; // 早于此的本机缓存忽略，避免删库后又被写回
+  const MAX_SUBMISSIONS = 250; // 云端单条约 64KB，250 条大约还在额度内
 
   const DIM_LABELS = [
     "行动欲", "共情", "野心", "羁绊", "掌控", "牺牲",
@@ -231,11 +232,17 @@
       );
       nextSubs.push(payload);
       nextSubs.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+      let kept = nextSubs.slice(0, MAX_SUBMISSIONS);
       const next = {
         version: 1,
         updatedAt: new Date().toISOString(),
-        submissions: nextSubs.slice(0, 80),
+        submissions: kept,
       };
+      // MantleDB 免费档单条约 64KB，超出则再裁掉最旧的
+      while (kept.length > 80 && JSON.stringify(next).length > 60000) {
+        kept.pop();
+        next.submissions = kept;
+      }
       if (await putCloud(next)) {
         remoteSubmissions = next.submissions;
         return true;
