@@ -14,6 +14,7 @@
   const MAX_PER_SHARD = 300;
   const MAX_SUBMISSIONS = SHARD_COUNT * MAX_PER_SHARD;
   const MAX_SHARD_BYTES = 60000;
+  const TEXT_MAX = 50;
   const CLOUD_EPOCH = "2026-08-21T18:35:00.000Z"; // 早于此的本机缓存忽略，避免删库后又被写回
 
   const DIM_LABELS = [
@@ -117,11 +118,25 @@
     return f >= m ? "female" : "male";
   }
 
+  function clipText(s) {
+    return String(s || "").trim().slice(0, TEXT_MAX);
+  }
+
   function pickText(subs, field, fallback) {
-    const texts = subs.map((s) => (s[field] || "").trim()).filter(Boolean);
+    const texts = subs.map((s) => clipText(s[field])).filter(Boolean);
     if (!texts.length) return fallback || "";
     texts.sort((a, b) => b.length - a.length);
     return texts[0];
+  }
+
+  function collectNotes(subs) {
+    return subs
+      .map((s) => ({
+        quote: clipText(s.quote),
+        why: clipText(s.why),
+        risk: clipText(s.risk),
+      }))
+      .filter((n) => n.quote || n.why || n.risk);
   }
 
   function splitParts(s) {
@@ -197,6 +212,7 @@
             quote: off ? off.quote : pickText(unique, "quote", "由玩家征集入池的角色。"),
             why: off ? off.why : pickText(unique, "why", "三位玩家为同一角色提交了人格画像，系统取 12 维平均后入池。"),
             risk: off ? off.risk : pickText(unique, "risk", "征集角色仅供娱乐，请以店家官方说明为准。"),
+            notes: off ? [] : collectNotes(unique),
             community: !off,
             official: !!off,
             votes: unique.length,
@@ -364,11 +380,14 @@
         return;
       }
       seen.add(k);
-      if (typeof R === "function") {
-        merged.push(R(r.book, r.name, r.gender, r.v, r.quote, r.why, r.risk));
-      } else {
-        merged.push(r);
-      }
+      const baseRole = typeof R === "function"
+        ? R(r.book, r.name, r.gender, r.v, r.quote, r.why, r.risk)
+        : { ...r };
+      merged.push({
+        ...baseRole,
+        community: true,
+        notes: Array.isArray(r.notes) ? r.notes : [],
+      });
     });
     return merged;
   }
@@ -401,9 +420,11 @@
     const name = (document.getElementById("c_name").value || "").trim();
     const gender = document.getElementById("c_gender").value || "female";
     const quoteEl = document.getElementById("c_quote");
-    const quote = ((quoteEl && quoteEl.value) || "").trim();
-    const why = "";
-    const risk = "";
+    const whyEl = document.getElementById("c_why");
+    const riskEl = document.getElementById("c_risk");
+    const quote = ((quoteEl && quoteEl.value) || "").trim().slice(0, 80);
+    const why = clipText((whyEl && whyEl.value) || "");
+    const risk = clipText((riskEl && riskEl.value) || "");
     const v = [...document.querySelectorAll("#c_dims input[type=range]")].map((el) =>
       clampInt(el.value)
     );
