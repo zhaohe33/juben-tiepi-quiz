@@ -497,6 +497,33 @@
     if (typeof global.renderHomeRoster === "function") global.renderHomeRoster();
   }
 
+  function showSetup() {
+    const hero = document.getElementById("hero");
+    const setup = document.getElementById("setup");
+    const cm = document.getElementById("community");
+    const quiz = document.getElementById("quiz");
+    const checkpoint = document.getElementById("checkpoint");
+    const result = document.getElementById("result");
+    if (cm) cm.classList.add("hidden");
+    if (quiz) quiz.classList.add("hidden");
+    if (checkpoint) checkpoint.classList.add("hidden");
+    if (result) result.classList.add("hidden");
+    if (hero) hero.classList.add("hidden");
+    if (setup) setup.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function bindEnter() {
+    const btn = document.getElementById("enterBtn");
+    if (!btn || btn.dataset.bound === "1") return;
+    btn.dataset.bound = "1";
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      showSetup();
+    });
+  }
+
   function showCommunity() {
     ["hero", "setup", "quiz", "checkpoint", "result"].forEach((id) => {
       const el = document.getElementById(id);
@@ -530,6 +557,7 @@
   }
 
   function initUi() {
+    bindEnter();
     renderDimSliders();
     const localBtn = document.getElementById("c_submit_local");
     if (localBtn) localBtn.onclick = () => submitAndSync();
@@ -559,6 +587,7 @@
   };
 
   global.Community = Community;
+  global.showSetup = showSetup;
   global.showCommunity = showCommunity;
   global.getActiveRoles = function () { return getActiveRoles(typeof roles !== "undefined" ? roles : []); };
 
