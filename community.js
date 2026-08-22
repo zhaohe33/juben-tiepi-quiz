@@ -58,6 +58,14 @@
     return id;
   }
 
+  function canonicalBook(s) {
+    const raw = String(s || "").trim().replace(/^《|》$/g, "");
+    const aliases = {
+      暗夜将至: "暗夜降至",
+    };
+    return aliases[raw] || raw;
+  }
+
   function norm(s) {
     return String(s || "")
       .trim()
@@ -67,7 +75,7 @@
   }
 
   function roleKey(book, name) {
-    return norm(book) + "|" + norm(name);
+    return norm(canonicalBook(book)) + "|" + norm(name);
   }
 
   function loadLocal() {
@@ -120,6 +128,7 @@
     const map = new Map();
     [...remoteList, ...localList].forEach((s) => {
       if (!s || !s.book || !s.name || !Array.isArray(s.v) || s.v.length !== 12) return;
+      s = { ...s, book: canonicalBook(s.book) };
       const k = roleKey(s.book, s.name) + "::" + (s.visitorId || s.user || "");
       const prev = map.get(k);
       if (!prev || (s.at || "") > (prev.at || "")) map.set(k, s);
@@ -369,7 +378,7 @@
     const v = [...document.querySelectorAll("#c_dims input[type=range]")].map((el) =>
       clampInt(el.value)
     );
-    return { book, name, gender, v, quote, why, risk };
+    return { book: canonicalBook(book), name, gender, v, quote, why, risk };
   }
 
   function setError(msg) {
