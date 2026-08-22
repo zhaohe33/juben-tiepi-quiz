@@ -10,7 +10,7 @@
   // 公开云端库：无需登录，所有人提交后彼此可见
   const CLOUD_URL = "https://mantledb.sh/v2/juben-tiepi-public-v1/community";
   const CLOUD_EPOCH = "2026-08-21T18:35:00.000Z"; // 早于此的本机缓存忽略，避免删库后又被写回
-  const MAX_SUBMISSIONS = 250; // 云端单条约 64KB，250 条大约还在额度内
+  const MAX_SUBMISSIONS = 300; // 云端单条约 64KB，300 条约 60KB，接近上限
 
   const DIM_LABELS = [
     "行动欲", "共情", "野心", "羁绊", "掌控", "牺牲",
