@@ -62,6 +62,7 @@
   .booktag{display:inline-block;border:1px solid #71535b;color:#dbc0c7;border-radius:999px;padding:7px 12px;font-size:12px}
   .role-name{font-size:clamp(48px,11vw,82px);line-height:1;margin:18px 0 8px}
   .match{font-size:14px;color:var(--gold);letter-spacing:.1em}
+  .share-stat{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.7}
   .result-quote{font-size:18px;line-height:1.9;color:#e7d9cf;max-width:640px;margin:24px auto}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
   .box{background:#151113;border:1px solid var(--line);border-radius:18px;padding:20px}
@@ -388,6 +389,7 @@ function showSetup(){
       <span class="booktag" id="rbook"></span>
       <div class="role-name" id="rname"></div>
       <div class="match" id="rmatch"></div>
+      <div class="share-stat muted" id="rshare">正在同步测友数据…</div>
       <div class="result-quote" id="rquote"></div>
     </div>
     <div class="grid2">
@@ -426,7 +428,7 @@ function showSetup(){
 
 </div>
 
-<script src="community.js?v=20260822z"></script>
+<script src="community.js?v=20260823a"></script>
 <script>
 
 
@@ -1167,7 +1169,31 @@ function showResult(ranked,user){
   });
   window.__result={top,alts:altPicks,user};
   setupRating(top);
+  setupResultShare(top);
   window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderResultShare(book,name,stats){
+  const el=document.getElementById("rshare");
+  if(!el||!window.Community||!Community.formatResultShareText)return;
+  const info=Community.formatResultShareText(book,name,stats);
+  el.textContent=info.text;
+  el.classList.toggle("muted",!!info.muted);
+}
+async function setupResultShare(top){
+  const el=document.getElementById("rshare");
+  if(!el||!window.Community)return;
+  el.textContent="正在同步测友数据…";
+  el.classList.add("muted");
+  if(Community.recordQuizResult){
+    try{
+      const stats=await Community.recordQuizResult(top.book,top.name,top.match,quizMode);
+      renderResultShare(top.book,top.name,stats);
+      return;
+    }catch(e){}
+  }
+  if(Community.getResultShare){
+    renderResultShare(top.book,top.name,Community.getResultShare(top.book,top.name));
+  }
 }
 function renderRatingPublic(book,name){
   const el=document.getElementById("ratePublic");

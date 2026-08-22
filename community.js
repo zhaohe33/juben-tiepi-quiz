@@ -7,17 +7,21 @@
   const THRESHOLD = 3;
   const STORAGE_KEY = "juben_community_submissions_v2";
   const RATINGS_STORAGE_KEY = "juben_role_ratings_v1";
+  const RESULTS_STORAGE_KEY = "juben_quiz_results_v1";
   const VISITOR_KEY = "juben_community_visitor_v1";
   // 公开云端库：10 个分片，每片最多约 300 条 / 60KB，合计约 3000 条
   const CLOUD_BASE = "https://mantledb.sh/v2/juben-tiepi-public-v1/";
   const CLOUD_LEGACY = CLOUD_BASE + "community";
   const CLOUD_RATINGS = CLOUD_BASE + "ratings";
+  const CLOUD_RESULTS = CLOUD_BASE + "results";
   const SHARD_COUNT = 10;
   const MAX_PER_SHARD = 300;
   const MAX_SUBMISSIONS = SHARD_COUNT * MAX_PER_SHARD;
   const MAX_SHARD_BYTES = 60000;
   const TEXT_MAX = 50;
   const MAX_RATINGS = 5000;
+  const MAX_RESULTS = 5000;
+  const MIN_RESULT_SHARE = 2;
   const CLOUD_EPOCH = "2026-08-21T18:35:00.000Z"; // 早于此的本机缓存忽略，避免删库后又被写回
 
   const DIM_LABELS = [
@@ -42,6 +46,7 @@
   let remoteSubmissions = [];
   let remotePool = [];
   let remoteRatings = [];
+  let remoteResults = [];
   let groupsCache = [];
 
   function uid() {
@@ -416,6 +421,128 @@
     } catch (e) {
       return false;
     }
+  }
+
+  function loadLocalResults() {
+    try {
+      const list = JSON.parse(localStorage.getItem(RESULTS_STORAGE_KEY) || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveLocalResults(list) {
+    localStorage.setItem(RESULTS_STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function mergeResults(localList, remoteList) {
+    const map = new Map();
+    [...remoteList, ...localList].forEach((raw) => {
+      if (!raw || !raw.book || !raw.name) return;
+      const entry = {
+        id: raw.id || (raw.visitorId || "") + "::" + (raw.at || ""),
+        book: canonicalBook(raw.book),
+        name: canonicalName(raw.name),
+        mode: raw.mode || "quick",
+        match: Math.round(Number(raw.match) || 0),
+        visitorId: raw.visitorId || "",
+        at: raw.at || new Date().toISOString(),
+      };
+      map.set(entry.id, entry);
+    });
+    return [...map.values()]
+      .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")))
+      .slice(0, MAX_RESULTS);
+  }
+
+  function allResults() {
+    return mergeResults(loadLocalResults(), remoteResults);
+  }
+
+  function summarizeResults(list) {
+    const total = list.length;
+    const byRole = new Map();
+    list.forEach((r) => {
+      const k = roleKey(r.book, r.name);
+      byRole.set(k, (byRole.get(k) || 0) + 1);
+    });
+    return { total, byRole };
+  }
+
+  function getResultShare(book, name, list) {
+    const items = list || allResults();
+    const summary = summarizeResults(items);
+    const same = summary.byRole.get(roleKey(book, name)) || 0;
+    const pct = summary.total ? (same / summary.total) * 100 : 0;
+    return { total: summary.total, same, pct };
+  }
+
+  function formatResultShareText(book, name, stats) {
+    book = canonicalBook(book);
+    name = canonicalName(name);
+    if (!stats || !stats.total) {
+      return { text: "正在同步测友数据…", muted: true };
+    }
+    if (stats.total < MIN_RESULT_SHARE) {
+      return {
+        text: "已有 " + stats.total + " 次完成记录 · 样本还少，分享给朋友一起来测吧",
+        muted: true,
+      };
+    }
+    const hint = stats.total < 10 ? " · 样本较少，仅供参考" : "";
+    return {
+      text:
+        "约 " + stats.pct.toFixed(1) + "% 的测友最高贴皮也是《" + book + "》" + name +
+        " · 共 " + stats.total + " 次记录" + hint,
+      muted: false,
+      total: stats.total,
+      same: stats.same,
+      pct: stats.pct,
+    };
+  }
+
+  async function fetchResults() {
+    const data = await fetchCloudDoc(CLOUD_RESULTS);
+    if (data && Array.isArray(data.results)) {
+      remoteResults = mergeResults([], data.results);
+    }
+  }
+
+  async function publishResults(list) {
+    const sorted = list.slice().sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    let kept = sorted.slice(0, MAX_RESULTS);
+    const doc = {
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      results: kept,
+    };
+    while (kept.length > 50 && JSON.stringify(doc).length > MAX_SHARD_BYTES) {
+      kept.pop();
+      doc.results = kept;
+    }
+    return putCloudDoc(CLOUD_RESULTS, doc);
+  }
+
+  async function recordQuizResult(book, name, match, mode) {
+    const payload = {
+      id: uid(),
+      book: canonicalBook(book),
+      name: canonicalName(name),
+      match: Math.round(Number(match) || 0),
+      mode: mode || "quick",
+      visitorId: getVisitorId(),
+      at: new Date().toISOString(),
+    };
+    const list = loadLocalResults();
+    list.push(payload);
+    saveLocalResults(list);
+    const merged = mergeResults(list, remoteResults);
+    try {
+      const ok = await publishResults(merged);
+      if (ok) remoteResults = merged;
+    } catch (e) {}
+    return getResultShare(payload.book, payload.name, merged);
   }
 
   function shardUrl(i) {
@@ -797,6 +924,7 @@
     await fetchCloud();
     await fetchCommunityJson();
     await fetchRatings();
+    await fetchResults();
     refreshGroups();
     renderList();
     setMeta(
@@ -889,6 +1017,9 @@
     formatRatingText,
     getMyRating,
     submitRating,
+    getResultShare,
+    formatResultShareText,
+    recordQuizResult,
     submitFromForm: () => submitFromForm(false),
     submitAndSync,
     refresh,
