@@ -6,15 +6,18 @@
 (function (global) {
   const THRESHOLD = 3;
   const STORAGE_KEY = "juben_community_submissions_v2";
+  const RATINGS_STORAGE_KEY = "juben_role_ratings_v1";
   const VISITOR_KEY = "juben_community_visitor_v1";
   // 公开云端库：10 个分片，每片最多约 300 条 / 60KB，合计约 3000 条
   const CLOUD_BASE = "https://mantledb.sh/v2/juben-tiepi-public-v1/";
   const CLOUD_LEGACY = CLOUD_BASE + "community";
+  const CLOUD_RATINGS = CLOUD_BASE + "ratings";
   const SHARD_COUNT = 10;
   const MAX_PER_SHARD = 300;
   const MAX_SUBMISSIONS = SHARD_COUNT * MAX_PER_SHARD;
   const MAX_SHARD_BYTES = 60000;
   const TEXT_MAX = 50;
+  const MAX_RATINGS = 5000;
   const CLOUD_EPOCH = "2026-08-21T18:35:00.000Z"; // 早于此的本机缓存忽略，避免删库后又被写回
 
   const DIM_LABELS = [
@@ -38,6 +41,7 @@
 
   let remoteSubmissions = [];
   let remotePool = [];
+  let remoteRatings = [];
   let groupsCache = [];
 
   function uid() {
@@ -109,6 +113,48 @@
     n = Math.round(Number(n));
     if (!isFinite(n)) n = 5;
     return Math.max(1, Math.min(10, n));
+  }
+
+  function clampScore(n) {
+    n = Math.round(Number(n));
+    if (!isFinite(n)) n = 3;
+    return Math.max(1, Math.min(5, n));
+  }
+
+  function loadLocalRatings() {
+    try {
+      const list = JSON.parse(localStorage.getItem(RATINGS_STORAGE_KEY) || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveLocalRatings(list) {
+    localStorage.setItem(RATINGS_STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function mergeRatings(localList, remoteList) {
+    const map = new Map();
+    [...remoteList, ...localList].forEach((r) => {
+      if (!r || !r.book || !r.name || !r.visitorId) return;
+      const entry = {
+        book: canonicalBook(r.book),
+        name: canonicalName(r.name),
+        score: clampScore(r.score),
+        match: Math.round(Number(r.match) || 0),
+        visitorId: r.visitorId,
+        at: r.at || new Date().toISOString(),
+      };
+      const k = roleKey(entry.book, entry.name) + "::" + entry.visitorId;
+      const prev = map.get(k);
+      if (!prev || (entry.at || "") > (prev.at || "")) map.set(k, entry);
+    });
+    return [...map.values()];
+  }
+
+  function allRatings() {
+    return mergeRatings(loadLocalRatings(), remoteRatings);
   }
 
   function averageVectors(subs) {
@@ -262,6 +308,71 @@
       }
       if (Array.isArray(data.pool)) remotePool = data.pool;
     } catch (e) {}
+  }
+
+  async function fetchRatings() {
+    const data = await fetchCloudDoc(CLOUD_RATINGS);
+    if (data && Array.isArray(data.ratings)) {
+      remoteRatings = mergeRatings([], data.ratings);
+    }
+  }
+
+  async function publishRatings(list) {
+    const sorted = list.slice().sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    let kept = sorted.slice(0, MAX_RATINGS);
+    const doc = {
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      ratings: kept,
+    };
+    while (kept.length > 50 && JSON.stringify(doc).length > MAX_SHARD_BYTES) {
+      kept.pop();
+      doc.ratings = kept;
+    }
+    return putCloudDoc(CLOUD_RATINGS, doc);
+  }
+
+  function getRatingSummary(book, name) {
+    const k = roleKey(book, name);
+    const items = allRatings().filter((r) => roleKey(r.book, r.name) === k);
+    if (!items.length) return { count: 0, avg: 0 };
+    const sum = items.reduce((s, r) => s + r.score, 0);
+    return { count: items.length, avg: sum / items.length };
+  }
+
+  function getMyRating(book, name) {
+    const vid = getVisitorId();
+    const k = roleKey(book, name);
+    const hit = allRatings().find((r) => roleKey(r.book, r.name) === k && r.visitorId === vid);
+    return hit ? hit.score : 0;
+  }
+
+  async function submitRating(book, name, score, match) {
+    const payload = {
+      book: canonicalBook(book),
+      name: canonicalName(name),
+      score: clampScore(score),
+      match: Math.round(Number(match) || 0),
+      visitorId: getVisitorId(),
+      at: new Date().toISOString(),
+    };
+    const list = loadLocalRatings().filter(
+      (r) =>
+        !(
+          roleKey(r.book, r.name) === roleKey(payload.book, payload.name) &&
+          r.visitorId === payload.visitorId
+        )
+    );
+    list.push(payload);
+    saveLocalRatings(list);
+    const merged = mergeRatings(list, remoteRatings);
+    try {
+      const ok = await publishRatings(merged);
+      if (ok) remoteRatings = merged;
+      return ok;
+    } catch (e) {
+      return false;
+    }
   }
 
   function shardUrl(i) {
@@ -442,6 +553,81 @@
     return { book: canonicalBook(book), name: canonicalName(name), gender, v, quote, why, risk };
   }
 
+  function getMySubmission(book, name) {
+    const vid = getVisitorId();
+    const k = roleKey(book, name);
+    const hits = mergeSubmissions(loadLocal(), remoteSubmissions).filter(
+      (s) => roleKey(s.book, s.name) === k && (s.visitorId || s.user || "") === vid
+    );
+    if (!hits.length) return null;
+    hits.sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
+    return hits[0];
+  }
+
+  function prefillForm(data) {
+    const bookEl = document.getElementById("c_book");
+    const nameEl = document.getElementById("c_name");
+    const genderEl = document.getElementById("c_gender");
+    const quoteEl = document.getElementById("c_quote");
+    const whyEl = document.getElementById("c_why");
+    const riskEl = document.getElementById("c_risk");
+    if (bookEl) bookEl.value = data.book || "";
+    if (nameEl) nameEl.value = data.name || "";
+    if (genderEl && data.gender) genderEl.value = data.gender;
+    if (quoteEl) quoteEl.value = data.quote || "";
+    if (whyEl) whyEl.value = data.why || "";
+    if (riskEl) riskEl.value = data.risk || "";
+    if (Array.isArray(data.v) && data.v.length === 12) {
+      document.querySelectorAll("#c_dims input[type=range]").forEach((el, i) => {
+        const val = clampInt(data.v[i]);
+        el.value = val;
+        const label = document.getElementById("c_dim_val_" + i);
+        if (label) label.textContent = val;
+      });
+    }
+    setError("");
+  }
+
+  function openCommunityForRole(role) {
+    if (!role || !role.book || !role.name) return;
+    const book = canonicalBook(role.book);
+    const name = canonicalName(role.name);
+    const mine = getMySubmission(book, name);
+    const data = mine
+      ? {
+          book,
+          name,
+          gender: mine.gender || role.gender || "female",
+          v: mine.v,
+          quote: mine.quote || "",
+          why: mine.why || "",
+          risk: mine.risk || "",
+        }
+      : {
+          book,
+          name,
+          gender: role.gender || "female",
+          v: Array.isArray(role.v) ? role.v.slice() : undefined,
+          quote: role.quote && !role.community ? role.quote : "",
+          why: "",
+          risk: "",
+        };
+    ["hero", "setup", "quiz", "checkpoint", "result"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("hidden");
+    });
+    const cm = document.getElementById("community");
+    if (cm) cm.classList.remove("hidden");
+    prefillForm(data);
+    setMeta(
+      mine
+        ? "已载入你上一份《" + book + "》" + name + " 征集，修改后提交会覆盖原记录。"
+        : "已填入《" + book + "》" + name + "，填写后提交即可。"
+    );
+    renderList();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function setError(msg) {
     const el = document.getElementById("c_error");
     if (!el) return;
@@ -563,6 +749,7 @@
     setMeta("同步中…");
     await fetchCloud();
     await fetchCommunityJson();
+    await fetchRatings();
     refreshGroups();
     renderList();
     setMeta(
@@ -651,10 +838,14 @@
     getActiveRoles,
     getCommunityPoolRoles,
     getGroups,
+    getRatingSummary,
+    getMyRating,
+    submitRating,
     submitFromForm: () => submitFromForm(false),
     submitAndSync,
     refresh,
     showCommunity,
+    openCommunityForRole,
     hideCommunityToSetup,
     hideCommunityToHero,
     newVisitorId,
