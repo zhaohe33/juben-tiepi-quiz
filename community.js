@@ -340,6 +340,22 @@
     return { count: items.length, avg: sum / items.length };
   }
 
+  function formatRatingText(book, name) {
+    const s = getRatingSummary(book, name);
+    if (!s.count) return { text: "暂无玩家评分", muted: true };
+    return {
+      text: "玩家评分 · 平均 " + s.avg.toFixed(1) + " 星 · " + s.count + " 人",
+      muted: false,
+      count: s.count,
+      avg: s.avg,
+    };
+  }
+
+  function formatRatingHtml(book, name) {
+    const info = formatRatingText(book, name);
+    return '<div class="c-rate' + (info.muted ? " muted" : "") + '">' + info.text + "</div>";
+  }
+
   function getMyRating(book, name) {
     const vid = getVisitorId();
     const k = roleKey(book, name);
@@ -673,7 +689,7 @@
           "<h3>" + g.name + "</h3>" + status +
           "</div>" +
           '<div class="c-votes">' + g.count + "</div>" +
-          "</div>" + avg + "</div>"
+          "</div>" + avg + formatRatingHtml(g.book, g.name) + "</div>"
         );
       })
       .join("");
@@ -839,6 +855,7 @@
     getCommunityPoolRoles,
     getGroups,
     getRatingSummary,
+    formatRatingText,
     getMyRating,
     submitRating,
     submitFromForm: () => submitFromForm(false),

@@ -79,6 +79,8 @@
   .rate-stars button{background:none;border:none;font-size:30px;color:#4a3a3e;cursor:pointer;padding:2px 4px;line-height:1;transition:color .15s,transform .15s}
   .rate-stars button.on,.rate-stars button:hover{color:var(--gold);transform:scale(1.06)}
   .rate-stars button:disabled{opacity:.55;cursor:wait}
+  .rate-public{font-size:13px;color:#c7a56b;margin:0 0 8px;letter-spacing:.04em}
+  .rate-public.muted{color:#796f72}
   .rate-meta{margin-top:10px;font-size:12px;color:#9f9297;min-height:1.4em}
   .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
   .footer-note{margin-top:26px;color:#796f72;font-size:11px;line-height:1.8;text-align:center}
@@ -209,6 +211,8 @@
   .c-empty{color:#8d8084;padding:20px;text-align:center;border:1px dashed #3b3033;border-radius:14px}
   /* avg-pool note */
   .c-card.inpool h3{color:#e7d9cf}
+  .c-rate{margin-top:8px;font-size:12px;color:#c7a56b;letter-spacing:.03em}
+  .c-rate.muted{color:#796f72}
   .c-error{color:#e2a0a8;font-size:13px;margin-top:10px}
   .cover-sub{margin-top:2px;display:flex;justify-content:center;width:100%}
   .cover-sub .cover-start{width:220px;min-width:220px;font-size:16px;letter-spacing:.12em}
@@ -394,6 +398,7 @@ function showSetup(){
     </div>
     <div class="box rate-box" style="margin-top:14px" id="rateBox">
       <h3>这次贴皮准吗？</h3>
+      <div class="rate-public muted" id="ratePublic">暂无玩家评分</div>
       <p class="rate-hint">给这个角色打个分，帮助校准贴皮（可选，1—5 星）</p>
       <div class="rate-stars" id="rateStars">
         <button type="button" data-v="1" aria-label="1 星">★</button>
@@ -415,7 +420,7 @@ function showSetup(){
 
 </div>
 
-<script src="community.js?v=20260822o"></script>
+<script src="community.js?v=20260822p"></script>
 <script>
 
 
@@ -990,6 +995,13 @@ function showResult(ranked,user){
   setupRating(top);
   window.scrollTo({top:0,behavior:"smooth"});
 }
+function renderRatingPublic(book,name){
+  const el=document.getElementById("ratePublic");
+  if(!el||!window.Community||!Community.formatRatingText)return;
+  const info=Community.formatRatingText(book,name);
+  el.textContent=info.text;
+  el.classList.toggle("muted",!!info.muted);
+}
 function updateRateMeta(stars,meta,selected,summary,justSubmitted){
   stars.querySelectorAll("button").forEach(btn=>{
     const v=Number(btn.dataset.v);
@@ -997,22 +1009,20 @@ function updateRateMeta(stars,meta,selected,summary,justSubmitted){
   });
   if(justSubmitted){
     meta.textContent="已收到，谢谢反馈！";
-    if(summary&&summary.count){
-      meta.textContent+=" 已有 "+summary.count+" 人评分 · 平均 "+summary.avg.toFixed(1)+" 星";
-    }
+    if(selected) meta.textContent+=" 你打了 "+selected+" 星";
     return;
   }
-  if(summary&&summary.count){
-    meta.textContent="已有 "+summary.count+" 人评分 · 平均 "+summary.avg.toFixed(1)+" 星";
-    if(selected) meta.textContent+=" · 你打了 "+selected+" 星";
+  if(selected){
+    meta.textContent="你打了 "+selected+" 星 · 可改选其他星重新提交";
     return;
   }
-  meta.textContent=selected?"你打了 "+selected+" 星":"点星评分，帮助校准贴皮";
+  meta.textContent="点星评分，帮助校准贴皮";
 }
 function setupRating(top){
   const stars=document.getElementById("rateStars");
   const meta=document.getElementById("rateMeta");
   if(!stars||!meta||!window.Community||!Community.getRatingSummary)return;
+  renderRatingPublic(top.book,top.name);
   const summary=Community.getRatingSummary(top.book,top.name);
   const my=Community.getMyRating?Community.getMyRating(top.book,top.name):0;
   updateRateMeta(stars,meta,my,summary,false);
@@ -1022,8 +1032,8 @@ function setupRating(top){
       if(!Community.submitRating)return;
       stars.querySelectorAll("button").forEach(b=>{b.disabled=true;});
       await Community.submitRating(top.book,top.name,v,top.match);
-      const next=Community.getRatingSummary(top.book,top.name);
-      updateRateMeta(stars,meta,v,next,true);
+      renderRatingPublic(top.book,top.name);
+      updateRateMeta(stars,meta,v,Community.getRatingSummary(top.book,top.name),true);
       stars.querySelectorAll("button").forEach(b=>{b.disabled=false;});
     };
   });
