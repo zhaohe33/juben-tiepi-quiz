@@ -9,15 +9,15 @@
   const RATINGS_STORAGE_KEY = "juben_role_ratings_v1";
   const RESULTS_STORAGE_KEY = "juben_quiz_results_v1";
   const VISITOR_KEY = "juben_community_visitor_v1";
-  // 公开云端库：10 个分片，每片最多约 300 条 / 60KB，合计约 3000 条
+  // 公开云端库：10 个分片；按 UTF-8 字节压在 ~55KB 内，避免中文内容撑爆导致 c0 写失败
   const CLOUD_BASE = "https://mantledb.sh/v2/juben-tiepi-public-v1/";
   const CLOUD_LEGACY = CLOUD_BASE + "community";
   const CLOUD_RATINGS = CLOUD_BASE + "ratings";
   const CLOUD_RESULTS = CLOUD_BASE + "results";
   const SHARD_COUNT = 10;
-  const MAX_PER_SHARD = 300;
+  const MAX_PER_SHARD = 200;
   const MAX_SUBMISSIONS = SHARD_COUNT * MAX_PER_SHARD;
-  const MAX_SHARD_BYTES = 60000;
+  const MAX_SHARD_BYTES = 55000;
   const TEXT_MAX = 50;
   const MAX_RATINGS = 5000;
   const MAX_RESULTS = 5000;
@@ -573,6 +573,14 @@
     }
   }
 
+  function utf8Bytes(obj) {
+    try {
+      return new TextEncoder().encode(JSON.stringify(obj)).length;
+    } catch (e) {
+      return JSON.stringify(obj).length * 2;
+    }
+  }
+
   function collectSubs(docs) {
     let list = [];
     docs.forEach((data) => {
@@ -585,15 +593,28 @@
     const sorted = subs.slice().sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
     let kept = sorted.slice(0, MAX_SUBMISSIONS);
     const shards = [];
+    let idx = 0;
     for (let i = 0; i < SHARD_COUNT; i++) {
-      let chunk = kept.slice(i * MAX_PER_SHARD, (i + 1) * MAX_PER_SHARD);
+      let chunk = [];
+      while (idx < kept.length && chunk.length < MAX_PER_SHARD) {
+        const trial = chunk.concat([kept[idx]]);
+        const doc = {
+          version: 2,
+          shard: i,
+          updatedAt: new Date().toISOString(),
+          submissions: trial,
+        };
+        if (chunk.length && utf8Bytes(doc) > MAX_SHARD_BYTES) break;
+        chunk = trial;
+        idx++;
+      }
       const doc = {
         version: 2,
         shard: i,
         updatedAt: new Date().toISOString(),
         submissions: chunk,
       };
-      while (chunk.length > 40 && JSON.stringify(doc).length > MAX_SHARD_BYTES) {
+      while (chunk.length > 20 && utf8Bytes(doc) > MAX_SHARD_BYTES) {
         chunk.pop();
         doc.submissions = chunk;
       }

@@ -133,6 +133,11 @@
     color:#d8c7b6;font-size:11px;letter-spacing:.08em;
     text-shadow:0 2px 12px #000
   }
+  .cover-credit{
+    position:absolute;right:2.4%;bottom:2.2%;z-index:20;
+    color:rgba(232,214,196,.72);font-size:11px;letter-spacing:.1em;
+    text-shadow:0 1px 8px rgba(0,0,0,.75);pointer-events:none;white-space:nowrap
+  }
   @keyframes breathe{
     0%,100%{box-shadow:0 0 0 1px rgba(255,222,157,.12) inset,0 12px 35px rgba(0,0,0,.34),0 0 12px rgba(199,165,107,.05)}
     50%{box-shadow:0 0 0 1px rgba(255,222,157,.2) inset,0 12px 42px rgba(0,0,0,.38),0 0 28px rgba(199,165,107,.22)}
@@ -167,7 +172,7 @@
 
   @media(max-width:640px){
     .wrap{padding:10px 9px 52px}.hero{min-height:auto}.grid2{grid-template-columns:1fr}
-    .alts{grid-template-columns:1fr}.card{border-radius:18px}.seg{grid-template-columns:1fr}.cover-frame{border-radius:16px}.cover-actions{bottom:5.2%}.cover-start{width:200px;min-width:200px;padding:12px 20px;font-size:14px}.cover-sub .cover-start{width:200px;min-width:200px}.cover-meta{display:none}.checkpoint{margin-top:3vh}.checkpoint-card{border-radius:18px}
+    .alts{grid-template-columns:1fr}.card{border-radius:18px}.seg{grid-template-columns:1fr}.cover-frame{border-radius:16px}.cover-actions{bottom:5.2%}.cover-start{width:200px;min-width:200px;padding:12px 20px;font-size:14px}.cover-sub .cover-start{width:200px;min-width:200px}.cover-meta{display:none}.cover-credit{right:3%;bottom:1.6%;font-size:10px;letter-spacing:.06em}.checkpoint{margin-top:3vh}.checkpoint-card{border-radius:18px}
   }
 
   /* community survey */
@@ -225,7 +230,6 @@
   .roster-names span{display:inline-block;margin-right:12px;white-space:nowrap}
   .roster-new{display:inline-block;margin-left:3px;padding:0 5px;border:1px solid #8a6a3d;border-radius:999px;color:var(--gold);font-size:10px;line-height:1.5;vertical-align:middle;font-style:normal}
   .roster-foot{margin-top:18px;color:#8d8084;font-size:12px;line-height:1.7}
-  .home-credit{margin:22px auto 8px;max-width:920px;text-align:center;color:#7a6f73;font-size:12px;letter-spacing:.08em;line-height:1.8}
   .roster-pending{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
   .roster-pending h3{margin:0 0 6px;font-size:16px;color:#e7d9cf}
   .roster-pending .sub{margin-bottom:12px}
@@ -270,6 +274,7 @@ function showSetup(){
       <div class="cover-meta" id="coverMeta">30—50题 · 六幕 · 8本48角 · 约6—14分钟</div>
       <div class="cover-sub"><button type="button" class="cover-start" onclick="showCommunity()">角色征集</button></div>
     </div>
+    <div class="cover-credit">改编自玉晨老师作品</div>
   </div>
 
   <div class="roster" id="roster">
@@ -281,7 +286,6 @@ function showSetup(){
       <div class="roster-pending" id="rosterPending"></div>
       <div class="roster-foot" id="rosterFoot"></div>
     </div>
-    <div class="home-credit">改编自玉晨老师作品</div>
   </div>
 </section>
 
@@ -430,7 +434,7 @@ function showSetup(){
 
 </div>
 
-<script src="community.js?v=20260823a"></script>
+<script src="community.js?v=20260823b"></script>
 <script>
 
 
