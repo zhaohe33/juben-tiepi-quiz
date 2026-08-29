@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-29T16:36:40.175Z",
+  "updatedAt": "2026-08-29T20:49:30.209Z",
   "source": "mantledb-shards",
-  "count": 635,
+  "count": 637,
   "submissions": [
+    {
+      "book": "流氓叙事",
+      "name": "缪宏谟",
+      "gender": "female",
+      "v": [
+        6,
+        6,
+        6,
+        7,
+        5,
+        7,
+        8,
+        6,
+        8,
+        6,
+        5,
+        6
+      ],
+      "quote": "你愿意爱人，但更不愿背叛自己。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_kx3nouoe4fjmteoif8x",
+      "at": "2026-08-29T17:54:27.469Z"
+    },
+    {
+      "book": "野菩萨",
+      "name": "钉子",
+      "gender": "female",
+      "v": [
+        10,
+        3,
+        10,
+        5,
+        9,
+        5,
+        4,
+        7,
+        10,
+        10,
+        7,
+        3
+      ],
+      "quote": "你先求活，再谈漂亮。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_t5k4ud7lh6nmtemuh97",
+      "at": "2026-08-29T17:08:25.227Z"
+    },
     {
       "book": "青白",
       "name": "苏无度",
