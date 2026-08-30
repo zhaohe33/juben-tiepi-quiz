@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-30T11:44:15.889Z",
+  "updatedAt": "2026-08-30T16:31:54.543Z",
   "source": "mantledb-shards",
-  "count": 637,
+  "count": 639,
   "submissions": [
+    {
+      "book": "如故",
+      "name": "卫子谣",
+      "gender": "female",
+      "v": [
+        4,
+        9,
+        4,
+        8,
+        4,
+        6,
+        7,
+        8,
+        7,
+        5,
+        5,
+        7
+      ],
+      "quote": "慧极必伤",
+      "why": "我能理解她的选择，想法，为什么这么做，我想过如果真的是我本人，我未必不会这样做。",
+      "risk": "",
+      "visitorId": "v_5pzmjitug5cmtfzqd49",
+      "at": "2026-08-30T15:59:31.006Z"
+    },
+    {
+      "book": "醉凌云",
+      "name": "白未染",
+      "gender": "male",
+      "v": [
+        9,
+        4,
+        7,
+        10,
+        10,
+        7,
+        3,
+        6,
+        4,
+        10,
+        10,
+        10
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_y0p3j460lsfmtfym2ss",
+      "at": "2026-08-30T15:25:51.511Z"
+    },
     {
       "book": "流氓叙事",
       "name": "缪宏谟",
