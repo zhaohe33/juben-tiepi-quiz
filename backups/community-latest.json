@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-30T20:54:14.483Z",
+  "updatedAt": "2026-08-31T05:09:52.169Z",
   "source": "mantledb-shards",
-  "count": 639,
+  "count": 641,
   "submissions": [
+    {
+      "book": "壁上观",
+      "name": "阿绾",
+      "gender": "female",
+      "v": [
+        6,
+        8,
+        5,
+        9,
+        2,
+        4,
+        6,
+        9,
+        4,
+        4,
+        5,
+        8
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_7r307a3docamtgjo9v3",
+      "at": "2026-08-31T01:21:22.811Z"
+    },
+    {
+      "book": "青白",
+      "name": "白怜",
+      "gender": "female",
+      "v": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "无羁绊",
+      "visitorId": "v_s51nedhkh8pmtgig8t5",
+      "at": "2026-08-31T00:39:15.347Z"
+    },
     {
       "book": "如故",
       "name": "卫子谣",
