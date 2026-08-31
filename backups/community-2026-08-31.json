@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-08-31T13:24:25.672Z",
+  "updatedAt": "2026-08-31T22:43:22.926Z",
   "source": "mantledb-shards",
-  "count": 644,
+  "count": 645,
   "submissions": [
+    {
+      "book": "如故",
+      "name": "袁玠",
+      "gender": "male",
+      "v": [
+        8,
+        4,
+        10,
+        8,
+        6,
+        4,
+        9,
+        8,
+        10,
+        10,
+        10,
+        2
+      ],
+      "quote": "你会把‘我来护着’说得像一句理所当然。",
+      "why": "野心，抱负，抗压，希望被人护着也会护着别人",
+      "risk": "自己白忙一场",
+      "visitorId": "v_fe7y44ooxfmthmoy13",
+      "at": "2026-08-31T19:29:38.369Z"
+    },
     {
       "book": "蟪蛄春秋",
       "name": "蜂",
