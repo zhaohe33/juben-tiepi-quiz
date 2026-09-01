@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-01T16:27:36.960Z",
+  "updatedAt": "2026-09-01T20:55:43.136Z",
   "source": "mantledb-shards",
-  "count": 649,
+  "count": 650,
   "submissions": [
+    {
+      "book": "大宴之上",
+      "name": "刘泠雪",
+      "gender": "female",
+      "v": [
+        8,
+        3,
+        6,
+        9,
+        3,
+        2,
+        2,
+        10,
+        5,
+        10,
+        9,
+        10
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_f2vjvj6u4lamtiy8nqt",
+      "at": "2026-09-01T17:38:05.027Z"
+    },
     {
       "book": "南墙",
       "name": "东方常夏",
