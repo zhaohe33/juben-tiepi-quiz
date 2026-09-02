@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-02T11:05:18.758Z",
+  "updatedAt": "2026-09-02T16:26:09.041Z",
   "source": "mantledb-shards",
-  "count": 650,
+  "count": 652,
   "submissions": [
+    {
+      "book": "塑料溫室",
+      "name": "朴珍珠",
+      "gender": "female",
+      "v": [
+        9,
+        9,
+        7,
+        10,
+        7,
+        10,
+        5,
+        3,
+        6,
+        5,
+        7,
+        1
+      ],
+      "quote": "",
+      "why": "堅韌不屈，親情是人生最重要的東西",
+      "risk": "",
+      "visitorId": "v_gpl9su9k547mtk58nhe",
+      "at": "2026-09-02T13:40:23.138Z"
+    },
+    {
+      "book": "青川",
+      "name": "柳清鹊",
+      "gender": "female",
+      "v": [
+        8,
+        5,
+        7,
+        8,
+        7,
+        8,
+        7,
+        5,
+        6,
+        9,
+        7,
+        7
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_5vv178pm55rmtk1fjqh",
+      "at": "2026-09-02T11:54:17.594Z"
+    },
     {
       "book": "大宴之上",
       "name": "刘泠雪",
