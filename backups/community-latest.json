@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-03T11:02:27.311Z",
+  "updatedAt": "2026-09-03T16:16:07.831Z",
   "source": "mantledb-shards",
-  "count": 657,
+  "count": 658,
   "submissions": [
+    {
+      "book": "挾劍惊風",
+      "name": "沈池懿",
+      "gender": "male",
+      "v": [
+        2,
+        5,
+        5,
+        10,
+        10,
+        5,
+        5,
+        7,
+        5,
+        5,
+        10,
+        6
+      ],
+      "quote": "往前走，別回頭。",
+      "why": "群像，書生，發瘋，優等生，委屈線，仇恨，不被選擇，被背叛，復仇，深愛著所有人卻被拋下才更痛，由愛生恨",
+      "risk": "",
+      "visitorId": "v_dxodh1vnh4jmtkacthj",
+      "at": "2026-09-03T15:51:34.574Z"
+    },
     {
       "book": "空山",
       "name": "花想容",
