@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-04T11:03:23.793Z",
+  "updatedAt": "2026-09-04T16:11:40.077Z",
   "source": "mantledb-shards",
-  "count": 658,
+  "count": 660,
   "submissions": [
+    {
+      "book": "如果长夜无明",
+      "name": "蝴蝶",
+      "gender": "female",
+      "v": [
+        10,
+        6,
+        10,
+        4,
+        8,
+        3,
+        3,
+        6,
+        9,
+        10,
+        6,
+        3
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_3x3kfbi0m5nmtn1wp1c",
+      "at": "2026-09-04T14:30:24.961Z"
+    },
+    {
+      "book": "草芥",
+      "name": "宴宁",
+      "gender": "female",
+      "v": [
+        9,
+        6,
+        9,
+        6,
+        7,
+        5,
+        7,
+        6,
+        8,
+        7,
+        9,
+        7
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_98alxwj4oycmtmyo4rs",
+      "at": "2026-09-04T13:01:05.405Z"
+    },
     {
       "book": "挾劍惊風",
       "name": "沈池懿",
