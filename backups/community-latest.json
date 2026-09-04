@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-04T16:11:40.077Z",
+  "updatedAt": "2026-09-04T20:39:46.682Z",
   "source": "mantledb-shards",
-  "count": 660,
+  "count": 662,
   "submissions": [
+    {
+      "book": "大宴之上",
+      "name": "刘泠雪",
+      "gender": "female",
+      "v": [
+        8,
+        3,
+        6,
+        9,
+        3,
+        2,
+        2,
+        10,
+        5,
+        10,
+        9,
+        10
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_cfrs8lejweumtn61gyf",
+      "at": "2026-09-04T16:28:16.064Z"
+    },
+    {
+      "book": "苍岐",
+      "name": "轩辕灵澈",
+      "gender": "female",
+      "v": [
+        10,
+        5,
+        10,
+        10,
+        10,
+        10,
+        10,
+        5,
+        10,
+        10,
+        10,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_ly9y1plmdqemtn5gs4d",
+      "at": "2026-09-04T16:24:48.878Z"
+    },
     {
       "book": "如果长夜无明",
       "name": "蝴蝶",
