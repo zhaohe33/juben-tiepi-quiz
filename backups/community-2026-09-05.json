@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-05T04:06:03.417Z",
+  "updatedAt": "2026-09-05T10:25:11.469Z",
   "source": "mantledb-shards",
-  "count": 663,
+  "count": 664,
   "submissions": [
+    {
+      "book": "流氓叙事",
+      "name": "蒋伯驾",
+      "gender": "female",
+      "v": [
+        6,
+        6,
+        6,
+        9,
+        5,
+        8,
+        5,
+        7,
+        6,
+        7,
+        8,
+        8
+      ],
+      "quote": "你最锋利的地方，恰恰是你愿意把自己交出去。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_op0etqqt0elmto4996j",
+      "at": "2026-09-05T08:24:26.929Z"
+    },
     {
       "book": "璃火",
       "name": "若竹",
@@ -9557,6 +9581,30 @@
       "at": "2026-08-22T05:16:19.188Z"
     },
     {
+      "book": "流氓叙事",
+      "name": "程聿怀",
+      "gender": "female",
+      "v": [
+        9,
+        9,
+        9,
+        9,
+        9,
+        8,
+        8,
+        8,
+        7,
+        9,
+        10,
+        7
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_h46fyo08dhfmt3x78ce",
+      "at": "2026-08-22T05:16:06.423Z"
+    },
+    {
       "book": "归昼",
       "name": "梁知薇",
       "gender": "female",
@@ -9583,30 +9631,6 @@
     {
       "book": "璃火",
       "name": "月寒",
-      "gender": "female",
-      "v": [
-        9,
-        9,
-        9,
-        9,
-        9,
-        8,
-        8,
-        8,
-        7,
-        9,
-        10,
-        7
-      ],
-      "quote": "",
-      "why": "",
-      "risk": "",
-      "visitorId": "v_h46fyo08dhfmt3x78ce",
-      "at": "2026-08-22T05:16:06.423Z"
-    },
-    {
-      "book": "流氓叙事",
-      "name": "程聿怀",
       "gender": "female",
       "v": [
         9,
