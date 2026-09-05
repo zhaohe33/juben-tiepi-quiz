@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-04T20:39:46.682Z",
+  "updatedAt": "2026-09-05T04:06:03.417Z",
   "source": "mantledb-shards",
-  "count": 662,
+  "count": 663,
   "submissions": [
+    {
+      "book": "璃火",
+      "name": "若竹",
+      "gender": "female",
+      "v": [
+        5,
+        5,
+        3,
+        9,
+        6,
+        5,
+        9,
+        8,
+        5,
+        3,
+        3,
+        8
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_uqkudsapwfcmtitg4eq",
+      "at": "2026-09-05T00:49:04.255Z"
+    },
     {
       "book": "大宴之上",
       "name": "刘泠雪",
