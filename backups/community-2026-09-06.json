@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-06T04:13:32.866Z",
+  "updatedAt": "2026-09-06T10:43:49.279Z",
   "source": "mantledb-shards",
-  "count": 666,
+  "count": 668,
   "submissions": [
+    {
+      "book": "如故",
+      "name": "卫子谣",
+      "gender": "female",
+      "v": [
+        7,
+        7,
+        10,
+        10,
+        5,
+        6,
+        7,
+        6,
+        8,
+        9,
+        7,
+        6
+      ],
+      "quote": "懂事，只是因为担心给别人制造麻烦",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_ujgsz4wb2p9mtpm1bnv",
+      "at": "2026-09-06T09:31:28.439Z"
+    },
+    {
+      "book": "草芥",
+      "name": "花禾",
+      "gender": "female",
+      "v": [
+        5,
+        9,
+        5,
+        10,
+        4,
+        10,
+        10,
+        5,
+        5,
+        5,
+        5,
+        7
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_3vync741p0tmtpf8sic",
+      "at": "2026-09-06T06:19:22.969Z"
+    },
     {
       "book": "青白",
       "name": "苏无度",
