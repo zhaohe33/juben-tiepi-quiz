@@ -1,9 +1,81 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-07T04:12:49.937Z",
+  "updatedAt": "2026-09-07T12:13:33.989Z",
   "source": "mantledb-shards",
-  "count": 669,
+  "count": 672,
   "submissions": [
+    {
+      "book": "如果长夜无明",
+      "name": "伤寒",
+      "gender": "female",
+      "v": [
+        7,
+        8,
+        5,
+        7,
+        4,
+        3,
+        3,
+        10,
+        2,
+        7,
+        5,
+        9
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_ljfu2ua1cjmmtr3w6xm",
+      "at": "2026-09-07T10:38:59.277Z"
+    },
+    {
+      "book": "流芳",
+      "name": "陈稷",
+      "gender": "male",
+      "v": [
+        8,
+        3,
+        8,
+        9,
+        10,
+        10,
+        3,
+        5,
+        6,
+        9,
+        6,
+        8
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_7jp86p3cjkamtqzb48i",
+      "at": "2026-09-07T08:30:31.309Z"
+    },
+    {
+      "book": "塑料温室",
+      "name": "崔昭贤",
+      "gender": "female",
+      "v": [
+        5,
+        4,
+        8,
+        6,
+        8,
+        4,
+        10,
+        10,
+        10,
+        4,
+        5,
+        6
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_izj0g2wj2cmtqq2h8f",
+      "at": "2026-09-07T04:15:54.356Z"
+    },
     {
       "book": "流氓叙事",
       "name": "以撒",
