@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-08T04:13:45.654Z",
+  "updatedAt": "2026-09-08T11:03:29.542Z",
   "source": "mantledb-shards",
-  "count": 673,
+  "count": 674,
   "submissions": [
+    {
+      "book": "暗夜降至",
+      "name": "郑宝珠",
+      "gender": "female",
+      "v": [
+        6,
+        6,
+        7,
+        7,
+        6,
+        5,
+        6,
+        7,
+        7,
+        6,
+        5,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_e7ynew0hmiemtshfruy",
+      "at": "2026-09-08T09:51:59.004Z"
+    },
     {
       "book": "壁上观",
       "name": "阿绾",
