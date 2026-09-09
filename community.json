@@ -1,9 +1,81 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-09T16:25:33.182Z",
+  "updatedAt": "2026-09-09T20:49:30.688Z",
   "source": "mantledb-shards",
-  "count": 674,
+  "count": 677,
   "submissions": [
+    {
+      "book": "流氓叙事",
+      "name": "黛利拉",
+      "gender": "female",
+      "v": [
+        8,
+        6,
+        5,
+        8,
+        6,
+        7,
+        4,
+        8,
+        8,
+        8,
+        7,
+        9
+      ],
+      "quote": "你像火，吵闹、明亮，也带着烧过之后的灰。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_wdikipx7flpmtuk02fc",
+      "at": "2026-09-09T20:37:23.832Z"
+    },
+    {
+      "book": "南墙",
+      "name": "云梦洲",
+      "gender": "male",
+      "v": [
+        7,
+        8,
+        6,
+        9,
+        6,
+        7,
+        6,
+        7,
+        5,
+        8,
+        9,
+        10
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_nh2psfs2clmtuhuj1m",
+      "at": "2026-09-09T19:33:08.074Z"
+    },
+    {
+      "book": "青白",
+      "name": "苏无恙",
+      "gender": "male",
+      "v": [
+        8,
+        1,
+        9,
+        6,
+        10,
+        1,
+        6,
+        2,
+        9,
+        10,
+        10,
+        8
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_5nenwylqc42mtufwveh",
+      "at": "2026-09-09T18:48:40.493Z"
+    },
     {
       "book": "暗夜降至",
       "name": "郑宝珠",
