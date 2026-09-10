@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-09T20:49:30.688Z",
+  "updatedAt": "2026-09-10T04:17:07.003Z",
   "source": "mantledb-shards",
-  "count": 677,
+  "count": 679,
   "submissions": [
+    {
+      "book": "流氓叙事",
+      "name": "黛利拉",
+      "gender": "female",
+      "v": [
+        8,
+        6,
+        6,
+        8,
+        6,
+        6,
+        10,
+        10,
+        8,
+        8,
+        7,
+        9
+      ],
+      "quote": "你像火，吵闹、明亮，也带着烧过之后的灰。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_dliubx1kntsmtuv5fg3",
+      "at": "2026-09-10T01:49:31.745Z"
+    },
+    {
+      "book": "旧梦",
+      "name": "紫烟",
+      "gender": "female",
+      "v": [
+        8,
+        7,
+        9,
+        10,
+        6,
+        9,
+        9,
+        7,
+        6,
+        3,
+        6,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_xhwtfhcg8smturzvzx",
+      "at": "2026-09-10T00:24:28.218Z"
+    },
     {
       "book": "流氓叙事",
       "name": "黛利拉",
