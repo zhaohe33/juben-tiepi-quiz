@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-12T15:24:36.500Z",
+  "updatedAt": "2026-09-12T20:26:42.280Z",
   "source": "mantledb-shards",
-  "count": 680,
+  "count": 681,
   "submissions": [
+    {
+      "book": "青白",
+      "name": "苏无度",
+      "gender": "female",
+      "v": [
+        7,
+        5,
+        9,
+        9,
+        9,
+        3,
+        3,
+        9,
+        7,
+        9,
+        4,
+        10
+      ],
+      "quote": "你习惯站在关系的高位，直到自己也被欲望拖进深水。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_ndsweaht0ugmtyqz7ig",
+      "at": "2026-09-12T19:00:22.545Z"
+    },
     {
       "book": "水仙",
       "name": "泉",
