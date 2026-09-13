@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-13T04:28:18.061Z",
+  "updatedAt": "2026-09-13T11:34:49.753Z",
   "source": "mantledb-shards",
-  "count": 681,
+  "count": 683,
   "submissions": [
+    {
+      "book": "璃火",
+      "name": "夏姬",
+      "gender": "female",
+      "v": [
+        10,
+        5,
+        10,
+        5,
+        5,
+        5,
+        5,
+        10,
+        10,
+        5,
+        10,
+        10
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_j4ubzl8rh2smtww0zu0",
+      "at": "2026-09-13T08:20:26.337Z"
+    },
+    {
+      "book": "二流货色",
+      "name": "季川",
+      "gender": "male",
+      "v": [
+        5,
+        5,
+        3,
+        10,
+        5,
+        10,
+        2,
+        5,
+        5,
+        10,
+        4,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_wq1sv408a68mtzbfysm",
+      "at": "2026-09-13T04:30:34.726Z"
+    },
     {
       "book": "青白",
       "name": "苏无度",
