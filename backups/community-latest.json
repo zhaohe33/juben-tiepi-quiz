@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-13T20:38:18.062Z",
+  "updatedAt": "2026-09-14T04:34:43.067Z",
   "source": "mantledb-shards",
-  "count": 684,
+  "count": 686,
   "submissions": [
+    {
+      "book": "体温",
+      "name": "温也",
+      "gender": "female",
+      "v": [
+        5,
+        8,
+        5,
+        8,
+        3,
+        5,
+        5,
+        7,
+        2,
+        5,
+        2,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_z15n8hul5ymt4chwvg",
+      "at": "2026-09-14T03:58:05.434Z"
+    },
+    {
+      "book": "旧梦",
+      "name": "沈遥",
+      "gender": "female",
+      "v": [
+        5,
+        8,
+        5,
+        8,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        2,
+        5
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_z15n8hul5ymt4chwvg",
+      "at": "2026-09-14T03:57:28.748Z"
+    },
     {
       "book": "再见黎明",
       "name": "何乐欣",
