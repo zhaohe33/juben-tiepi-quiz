@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-16T16:39:17.651Z",
+  "updatedAt": "2026-09-16T21:10:43.730Z",
   "source": "mantledb-shards",
-  "count": 688,
+  "count": 689,
   "submissions": [
+    {
+      "book": "蟪蛄春秋",
+      "name": "蜂",
+      "gender": "female",
+      "v": [
+        6,
+        8,
+        3,
+        9,
+        2,
+        8,
+        8,
+        4,
+        5,
+        3,
+        4,
+        4
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_53idy62bmdpmu4c9v5p",
+      "at": "2026-09-16T16:53:27.473Z"
+    },
     {
       "book": "体温",
       "name": "温也",
