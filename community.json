@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-20T15:54:31.062Z",
+  "updatedAt": "2026-09-20T20:39:34.486Z",
   "source": "mantledb-shards",
-  "count": 497,
+  "count": 498,
   "submissions": [
+    {
+      "book": "南墙贰",
+      "name": "柳清泉",
+      "gender": "female",
+      "v": [
+        9,
+        8,
+        7,
+        6,
+        4,
+        9,
+        5,
+        5,
+        7,
+        4,
+        4,
+        6
+      ],
+      "quote": "我要上刀山，只为救一朵花而已",
+      "why": "爱的方式，理想，价值观，性格",
+      "risk": "对位ooc",
+      "visitorId": "v_d0u155h5wvvmua26v4e",
+      "at": "2026-09-20T17:10:30.777Z"
+    },
     {
       "book": "醉凌云",
       "name": "苏浅语",
