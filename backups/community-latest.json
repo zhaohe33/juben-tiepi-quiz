@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-22T21:10:27.654Z",
+  "updatedAt": "2026-09-23T04:27:13.387Z",
   "source": "mantledb-shards",
-  "count": 498,
+  "count": 499,
   "submissions": [
+    {
+      "book": "归途七万里",
+      "name": "黄佐廷",
+      "gender": "male",
+      "v": [
+        9,
+        8,
+        9,
+        9,
+        10,
+        10,
+        4,
+        9,
+        9,
+        10,
+        3,
+        8
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_nxztvkzyukhmudea9fe",
+      "at": "2026-09-23T01:01:57.111Z"
+    },
     {
       "book": "南墙贰",
       "name": "柳清泉",
