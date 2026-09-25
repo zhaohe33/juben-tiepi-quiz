@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-24T21:24:40.052Z",
+  "updatedAt": "2026-09-25T04:35:29.514Z",
   "source": "mantledb-shards",
-  "count": 458,
+  "count": 459,
   "submissions": [
+    {
+      "book": "如故",
+      "name": "卫子谣",
+      "gender": "female",
+      "v": [
+        5,
+        8,
+        5,
+        7,
+        5,
+        6,
+        5,
+        8,
+        6,
+        6,
+        7,
+        6
+      ],
+      "quote": "你看得太明白，所以有些疼也来得比别人早。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_r8njjrrl67mugfbi6n",
+      "at": "2026-09-25T03:55:19.224Z"
+    },
     {
       "book": "红豆",
       "name": "白露",
@@ -8046,7 +8070,7 @@
     },
     {
       "book": "如故",
-      "name": "卫子遥",
+      "name": "卫子谣",
       "gender": "female",
       "v": [
         1,
