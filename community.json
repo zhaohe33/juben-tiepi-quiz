@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-01T12:56:59.345Z",
+  "updatedAt": "2026-10-01T22:34:30.059Z",
   "source": "mantledb-shards",
-  "count": 366,
+  "count": 367,
   "submissions": [
+    {
+      "book": "如故",
+      "name": "李文瑙",
+      "gender": "male",
+      "v": [
+        7,
+        6,
+        7,
+        7,
+        10,
+        7,
+        6,
+        6,
+        6,
+        7,
+        7,
+        4
+      ],
+      "quote": "你最危险的地方，是你对羁绊从来不是浅尝辄止。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_ih77qnl4fr8muq2ds9b",
+      "at": "2026-10-01T21:48:09.244Z"
+    },
     {
       "book": "壁上观",
       "name": "九劫",
