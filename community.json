@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-03T11:29:10.448Z",
+  "updatedAt": "2026-10-03T16:05:23.025Z",
   "source": "mantledb-shards",
-  "count": 369,
+  "count": 370,
   "submissions": [
+    {
+      "book": "青白",
+      "name": "苏无度",
+      "gender": "female",
+      "v": [
+        8,
+        5,
+        9,
+        9,
+        8,
+        4,
+        3,
+        6,
+        7,
+        8,
+        8,
+        9
+      ],
+      "quote": "你习惯站在关系的高位，直到自己也被欲望拖进深水。",
+      "why": "这个角色足够强大，狠戾",
+      "risk": "社恐，放不开",
+      "visitorId": "v_rxbj5tlvsjmusguvpz",
+      "at": "2026-10-03T14:36:14.422Z"
+    },
     {
       "book": "乱世书",
       "name": "沈复",
