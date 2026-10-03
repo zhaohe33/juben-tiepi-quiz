@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-02T22:03:49.649Z",
+  "updatedAt": "2026-10-03T04:59:19.320Z",
   "source": "mantledb-shards",
-  "count": 368,
+  "count": 369,
   "submissions": [
+    {
+      "book": "乱世书",
+      "name": "沈复",
+      "gender": "male",
+      "v": [
+        6,
+        5,
+        5,
+        5,
+        5,
+        5,
+        8,
+        7,
+        5,
+        5,
+        5,
+        6
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_3s8q2rwrwwmur83gnr",
+      "at": "2026-10-03T03:18:02.915Z"
+    },
     {
       "book": "如故",
       "name": "袁阶",
