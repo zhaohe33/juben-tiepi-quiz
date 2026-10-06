@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-06T06:08:46.731Z",
+  "updatedAt": "2026-10-06T18:14:34.495Z",
   "source": "mantledb-shards",
-  "count": 370,
+  "count": 371,
   "submissions": [
+    {
+      "book": "既往",
+      "name": "许尽欢",
+      "gender": "female",
+      "v": [
+        7,
+        2,
+        5,
+        7,
+        4,
+        4,
+        2,
+        3,
+        10,
+        10,
+        5,
+        9
+      ],
+      "quote": "人生得意须尽欢",
+      "why": "比较自我，为自己考虑，清醒的利己主义者，先婚后爱",
+      "risk": "不吃爱情，不吃友情，道德感过高，不自私",
+      "visitorId": "v_2rugzuxd8a4muwn654j",
+      "at": "2026-10-06T12:15:17.808Z"
+    },
     {
       "book": "青白",
       "name": "苏无度",
