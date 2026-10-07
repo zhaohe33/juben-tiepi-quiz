@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-07T13:07:08.072Z",
+  "updatedAt": "2026-10-07T22:58:19.749Z",
   "source": "mantledb-shards",
-  "count": 371,
+  "count": 372,
   "submissions": [
+    {
+      "book": "青白",
+      "name": "苏无度",
+      "gender": "female",
+      "v": [
+        8,
+        5,
+        9,
+        9,
+        8,
+        4,
+        3,
+        6,
+        7,
+        8,
+        8,
+        9
+      ],
+      "quote": "你习惯站在关系的高位，直到自己也被欲望拖进深水。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_3assdrgidu7mux8wb2g",
+      "at": "2026-10-07T17:38:19.253Z"
+    },
     {
       "book": "既往",
       "name": "许尽欢",
