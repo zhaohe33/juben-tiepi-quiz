@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-09T05:52:31.954Z",
+  "updatedAt": "2026-10-09T13:01:03.369Z",
   "source": "mantledb-shards",
-  "count": 373,
+  "count": 374,
   "submissions": [
+    {
+      "book": "青川",
+      "name": "柳青鹊",
+      "gender": "female",
+      "v": [
+        7,
+        8,
+        7,
+        5,
+        8,
+        9,
+        10,
+        6,
+        7,
+        4,
+        1,
+        1
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_5f3lh9naxgmv0pk79j",
+      "at": "2026-10-09T09:03:02.488Z"
+    },
     {
       "book": "黑日",
       "name": "秦晴",
