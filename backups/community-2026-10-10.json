@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-10T05:30:32.214Z",
+  "updatedAt": "2026-10-10T12:18:05.631Z",
   "source": "mantledb-shards",
-  "count": 374,
+  "count": 375,
   "submissions": [
+    {
+      "book": "青白",
+      "name": "魏玉卿",
+      "gender": "female",
+      "v": [
+        6,
+        9,
+        3,
+        2,
+        5,
+        7,
+        4,
+        8,
+        4,
+        4,
+        6,
+        4
+      ],
+      "quote": "你愿意怜悯众生，却也偷偷渴望有一个人只看见你。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_gvhct606v9mv209cam",
+      "at": "2026-10-10T06:23:28.568Z"
+    },
     {
       "book": "青川",
       "name": "柳青鹊",
