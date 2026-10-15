@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-15T11:15:34.587Z",
+  "updatedAt": "2026-10-15T16:46:37.491Z",
   "source": "mantledb-shards",
-  "count": 282,
+  "count": 283,
   "submissions": [
+    {
+      "book": "如故",
+      "name": "梁以忱",
+      "gender": "female",
+      "v": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "quote": "",
+      "why": "她做的每个决定我都会做",
+      "risk": "",
+      "visitorId": "v_3d2ojebbghkmv9p0aur",
+      "at": "2026-10-15T15:31:15.620Z"
+    },
     {
       "book": "旧梦",
       "name": "紫烟",
