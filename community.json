@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-16T20:51:54.172Z",
+  "updatedAt": "2026-10-17T04:02:16.427Z",
   "source": "mantledb-shards",
-  "count": 261,
+  "count": 262,
   "submissions": [
+    {
+      "book": "体温",
+      "name": "温也",
+      "gender": "female",
+      "v": [
+        9,
+        7,
+        9,
+        3,
+        7,
+        4,
+        7,
+        6,
+        9,
+        8,
+        5,
+        5
+      ],
+      "quote": "爱刻骨就好，不用圆满",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_2mfxatu961imvb6easv",
+      "at": "2026-10-17T03:58:26.834Z"
+    },
     {
       "book": "如故",
       "name": "梁以忱",
