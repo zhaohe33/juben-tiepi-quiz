@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-21T21:30:27.200Z",
+  "updatedAt": "2026-10-22T04:20:47.608Z",
   "source": "mantledb-shards",
-  "count": 266,
+  "count": 267,
   "submissions": [
+    {
+      "book": "流氓叙事",
+      "name": "蒋伯驾",
+      "gender": "male",
+      "v": [
+        3,
+        7,
+        8,
+        10,
+        4,
+        10,
+        6,
+        9,
+        5,
+        10,
+        4,
+        10
+      ],
+      "quote": "我蒋伯驾唯有贱命一条价值千金赠予程走柳小姐当做生辰贺礼",
+      "why": "我也很舔狗我也喜欢这样的感情但是我不喜欢她的坚强",
+      "risk": "",
+      "visitorId": "v_2nsu3qcy67emviozsec",
+      "at": "2026-10-21T22:37:16.121Z"
+    },
     {
       "book": "秦风颂",
       "name": "霁雨舟",
