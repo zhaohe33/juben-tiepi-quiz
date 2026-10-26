@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-26T04:22:53.329Z",
+  "updatedAt": "2026-10-26T12:42:53.934Z",
   "source": "mantledb-shards",
-  "count": 271,
+  "count": 272,
   "submissions": [
+    {
+      "book": "流氓叙事",
+      "name": "以撒",
+      "gender": "male",
+      "v": [
+        5,
+        6,
+        5,
+        9,
+        8,
+        6,
+        5,
+        9,
+        4,
+        7,
+        5,
+        10
+      ],
+      "quote": "你不是不会爱，只是最初把‘不失去’误当成了‘拥有’。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_coskd28lycimvp44lag",
+      "at": "2026-10-26T10:29:46.025Z"
+    },
     {
       "book": "醉凌云",
       "name": "白未染",
