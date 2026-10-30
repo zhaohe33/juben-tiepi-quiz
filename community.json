@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-30T12:37:22.403Z",
+  "updatedAt": "2026-10-30T22:10:01.454Z",
   "source": "mantledb-shards",
-  "count": 278,
+  "count": 279,
   "submissions": [
+    {
+      "book": "流芳",
+      "name": "陈阎芙蓉",
+      "gender": "female",
+      "v": [
+        5,
+        10,
+        4,
+        9,
+        3,
+        5,
+        5,
+        9,
+        10,
+        10,
+        7,
+        8
+      ],
+      "quote": "你最柔软的地方，是你终于允许自己被偏爱。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_xqdkhxlqlxmvv305kr",
+      "at": "2026-10-30T14:44:14.587Z"
+    },
     {
       "book": "野菩萨",
       "name": "生吞",
