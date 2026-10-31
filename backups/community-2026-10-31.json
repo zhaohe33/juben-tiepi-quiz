@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-31T05:11:32.497Z",
+  "updatedAt": "2026-10-31T12:04:54.709Z",
   "source": "mantledb-shards",
-  "count": 279,
+  "count": 280,
   "submissions": [
+    {
+      "book": "窃云台",
+      "name": "朱懿珩",
+      "gender": "male",
+      "v": [
+        6,
+        8,
+        5,
+        9,
+        5,
+        6,
+        6,
+        10,
+        6,
+        5,
+        10,
+        9
+      ],
+      "quote": "你最想要的不是王座，是有人终于没有把你放下。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_j2xjw5qwlcjmt4nwphd",
+      "at": "2026-10-31T09:36:52.313Z"
+    },
     {
       "book": "流芳",
       "name": "陈阎芙蓉",
