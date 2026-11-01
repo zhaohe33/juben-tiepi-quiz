@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-01T13:05:25.834Z",
+  "updatedAt": "2026-11-01T21:55:39.003Z",
   "source": "mantledb-shards",
-  "count": 281,
+  "count": 282,
   "submissions": [
+    {
+      "book": "归昼",
+      "name": "梁知薇",
+      "gender": "female",
+      "v": [
+        10,
+        3,
+        10,
+        10,
+        10,
+        10,
+        8,
+        8,
+        10,
+        6,
+        2,
+        10
+      ],
+      "quote": "我恨你，不止三千遍",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_xgqmkbnryiamvy6m9zw",
+      "at": "2026-11-01T18:47:09.598Z"
+    },
     {
       "book": "醉凌云",
       "name": "白未染",
