@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-05T06:16:50.366Z",
+  "updatedAt": "2026-11-05T19:48:03.471Z",
   "source": "mantledb-shards",
-  "count": 284,
+  "count": 285,
   "submissions": [
+    {
+      "book": "如故",
+      "name": "卫上黎",
+      "gender": "male",
+      "v": [
+        6,
+        6,
+        6,
+        9,
+        5,
+        6,
+        7,
+        4,
+        7,
+        5,
+        4,
+        6
+      ],
+      "quote": "你会把‘我来护着’说得像一句理所当然。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_1isx7un7mlxmw3tydb8",
+      "at": "2026-11-05T17:40:27.244Z"
+    },
     {
       "book": "窃云台",
       "name": "朱懿珩",
