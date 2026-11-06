@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-06T06:11:36.827Z",
+  "updatedAt": "2026-11-06T19:13:37.441Z",
   "source": "mantledb-shards",
-  "count": 286,
+  "count": 287,
   "submissions": [
+    {
+      "book": "南墙贰",
+      "name": "陈海棠",
+      "gender": "female",
+      "v": [
+        9,
+        1,
+        8,
+        1,
+        7,
+        1,
+        1,
+        10,
+        8,
+        10,
+        10,
+        5
+      ],
+      "quote": "世上再无穆青山，无人爱我陈海棠",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_kemy2v8vhsmw56p8do",
+      "at": "2026-11-06T16:23:59.294Z"
+    },
     {
       "book": "空山",
       "name": "花想容",
