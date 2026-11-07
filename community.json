@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-07T12:48:54.794Z",
+  "updatedAt": "2026-11-07T21:41:22.210Z",
   "source": "mantledb-shards",
-  "count": 288,
+  "count": 290,
   "submissions": [
+    {
+      "book": "琼崖贰",
+      "name": "剑二",
+      "gender": "female",
+      "v": [
+        5,
+        5,
+        3,
+        10,
+        1,
+        8,
+        8,
+        8,
+        5,
+        2,
+        5,
+        7
+      ],
+      "quote": "",
+      "why": "单纯，决定了就做到底，不会轻易退缩",
+      "risk": "",
+      "visitorId": "v_y0nd22bnnkbmw6m2zmc",
+      "at": "2026-11-07T16:22:20.963Z"
+    },
+    {
+      "book": "塑料温室",
+      "name": "崔昭贤",
+      "gender": "female",
+      "v": [
+        8,
+        3,
+        10,
+        6,
+        10,
+        5,
+        10,
+        7,
+        7,
+        5,
+        3,
+        3
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_zb1aluv209hmw6l1z0t",
+      "at": "2026-11-07T15:54:22.603Z"
+    },
     {
       "book": "流氓叙事",
       "name": "伤寒",
