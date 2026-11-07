@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-06T19:13:37.441Z",
+  "updatedAt": "2026-11-07T05:39:50.598Z",
   "source": "mantledb-shards",
-  "count": 287,
+  "count": 288,
   "submissions": [
+    {
+      "book": "流氓叙事",
+      "name": "伤寒",
+      "gender": "female",
+      "v": [
+        6,
+        8,
+        4,
+        7,
+        4,
+        3,
+        3,
+        10,
+        3,
+        7,
+        4,
+        9
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_ksvy2njstdbmw5ycb4x",
+      "at": "2026-11-07T05:18:33.892Z"
+    },
     {
       "book": "南墙贰",
       "name": "陈海棠",
