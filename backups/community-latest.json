@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-11T13:57:47.566Z",
+  "updatedAt": "2026-11-12T00:27:28.064Z",
   "source": "mantledb-shards",
-  "count": 292,
+  "count": 293,
   "submissions": [
+    {
+      "book": "醉凌云",
+      "name": "苏浅语",
+      "gender": "female",
+      "v": [
+        7,
+        7,
+        2,
+        9,
+        6,
+        4,
+        4,
+        1,
+        5,
+        7,
+        6,
+        4
+      ],
+      "quote": "你嘴上不肯输，心里却比谁都怕没有人接住。",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_d4z3ev6evcmwcbfs22",
+      "at": "2026-11-11T16:15:06.012Z"
+    },
     {
       "book": "青川",
       "name": "柳清鹊",
