@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-12T23:27:06.078Z",
+  "updatedAt": "2026-11-13T06:15:11.761Z",
   "source": "mantledb-shards",
-  "count": 293,
+  "count": 294,
   "submissions": [
+    {
+      "book": "草芥",
+      "name": "宴宁",
+      "gender": "female",
+      "v": [
+        10,
+        7,
+        10,
+        7,
+        9,
+        8,
+        6,
+        6,
+        8,
+        8,
+        8,
+        7
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_x6auca3sd2fmwefm09j",
+      "at": "2026-11-13T03:44:31.726Z"
+    },
     {
       "book": "醉凌云",
       "name": "苏浅语",
