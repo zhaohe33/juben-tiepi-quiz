@@ -1,9 +1,57 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-14T13:23:20.597Z",
+  "updatedAt": "2026-11-14T22:13:33.656Z",
   "source": "mantledb-shards",
-  "count": 296,
+  "count": 298,
   "submissions": [
+    {
+      "book": "如果长夜无明",
+      "name": "蝴蝶",
+      "gender": "female",
+      "v": [
+        9,
+        3,
+        8,
+        6,
+        8,
+        5,
+        10,
+        4,
+        8,
+        10,
+        7,
+        3
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_rvz8zwchgimwgruncs",
+      "at": "2026-11-14T19:02:25.142Z"
+    },
+    {
+      "book": "绿洲",
+      "name": "祝穆",
+      "gender": "female",
+      "v": [
+        9,
+        2,
+        9,
+        5,
+        9,
+        3,
+        6,
+        6,
+        8,
+        9,
+        10,
+        3
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_8yl6w45kum7mwgogzey",
+      "at": "2026-11-14T17:27:23.758Z"
+    },
     {
       "book": "暗夜降至",
       "name": "郑宝珠",
