@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-22T06:19:38.589Z",
+  "updatedAt": "2026-11-22T19:24:19.859Z",
   "source": "mantledb-shards",
-  "count": 304,
+  "count": 305,
   "submissions": [
+    {
+      "book": "璃火",
+      "name": "夏姬",
+      "gender": "female",
+      "v": [
+        7,
+        4,
+        6,
+        7,
+        3,
+        7,
+        3,
+        5,
+        6,
+        5,
+        7,
+        10
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_jwhrccb1z5cmwrqb6kc",
+      "at": "2026-11-22T11:04:57.582Z"
+    },
     {
       "book": "归昼",
       "name": "流氓叙事",
