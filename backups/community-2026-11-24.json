@@ -1,9 +1,33 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-24T09:33:53.329Z",
+  "updatedAt": "2026-11-24T22:15:04.595Z",
   "source": "mantledb-shards",
-  "count": 305,
+  "count": 306,
   "submissions": [
+    {
+      "book": "暗夜降至",
+      "name": "车允智",
+      "gender": "female",
+      "v": [
+        9,
+        4,
+        10,
+        4,
+        9,
+        6,
+        9,
+        5,
+        8,
+        10,
+        10,
+        7
+      ],
+      "quote": "",
+      "why": "",
+      "risk": "",
+      "visitorId": "v_j5s3shstiwqmwuqjflo",
+      "at": "2026-11-24T13:34:27.290Z"
+    },
     {
       "book": "璃火",
       "name": "夏姬",
